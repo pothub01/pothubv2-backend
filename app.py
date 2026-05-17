@@ -809,13 +809,17 @@ def not_found(error):
 def internal_error(error):
     return jsonify({"error": "Internal server error", "message": "Something went wrong"}), 500
 
-# ── Main ──
+# ── Initialize on Import (for gunicorn) ──
+if not os.path.exists(DB_PATH):
+    print("Database not found. Initializing...")
+    init_db()
+    seed_products()
+    seed_blog_posts()
+    seed_reviews()
+    print("Database ready")
+
+# ── Production Entry Point ──
 if __name__ == "__main__":
-    if not os.path.exists(DB_PATH):
-        init_db()
-        seed_products()
-        seed_blog_posts()
-        seed_reviews()
-    print("PotHub Backend starting on http://localhost:5000")
-    print("API endpoints available at /api/*")
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    debug = os.environ.get("FLASK_ENV") != "production"
+    app.run(debug=debug, host="0.0.0.0", port=port)
