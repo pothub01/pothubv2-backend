@@ -300,9 +300,44 @@ def health_check():
     try:
         db = get_db()
         db.execute("SELECT 1")
-        return jsonify({"status": "healthy", "database": "connected", "timestamp": datetime.datetime.now().isoformat()})
+        cursor = db.cursor()
+        cursor.execute("SELECT COUNT(*) FROM products")
+        product_count = cursor.fetchone()[0]
+        return jsonify({"status": "healthy", "database": "connected", "products": product_count, "timestamp": datetime.datetime.now().isoformat()})
     except Exception as e:
-        return jsonify({"status": "unhealthy", "error": str(e)}), 503
+        import traceback
+        return jsonify({"status": "unhealthy", "error": str(e), "traceback": traceback.format_exc()}), 503
+
+@app.route("/api/debug", methods=["GET"])
+def debug_info():
+    """Diagnostic endpoint to check DB state."""
+    try:
+        db = get_db()
+        cursor = db.cursor()
+
+        # Check tables
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        tables = [t[0] for t in cursor.fetchall()]
+
+        # Check products
+        cursor.execute("SELECT COUNT(*) FROM products")
+        product_count = cursor.fetchone()[0]
+
+        # Check first product raw data
+        cursor.execute("SELECT id, name, tags, colors, sizes FROM products LIMIT 1")
+        first = cursor.fetchone()
+        first_product = dict(first) if first else None
+
+        return jsonify({
+            "tables": tables,
+            "product_count": product_count,
+            "first_product": first_product,
+            "db_path": DB_PATH,
+            "db_exists": os.path.exists(DB_PATH)
+        })
+    except Exception as e:
+        import traceback
+        return jsonify({"error": str(e), "traceback": traceback.format_exc()}), 500
 
 # ── Products API ──
 @app.route("/api/products", methods=["GET"])
@@ -328,7 +363,7 @@ def get_products():
         params.append(category)
     if tag:
         query += " AND tags LIKE ?"
-        params.append(f'"{tag}"')
+        params.append(f'%"{tag}"%')
     if search:
         query += " AND (name LIKE ? OR category LIKE ? OR description LIKE ?)"
         params.extend([f"%{search}%", f"%{search}%", f"%{search}%"])
@@ -665,7 +700,7 @@ def get_blog_posts():
         params.append(category)
     if tag:
         query += " AND tags LIKE ?"
-        params.append(f'"{tag}"')
+        params.append(f'%"{tag}"%')
     query += " ORDER BY id DESC"
     cursor.execute(query, params)
     rows = cursor.fetchall()
@@ -800,6 +835,20 @@ def serve_page(path):
         return send_from_directory(os.path.join(BASE_DIR, "static"), path)
     return render_template("index.html")
 
+
+# ── Global Error Handler (logs to stderr for Render) ──
+import traceback
+import sys
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    """Log full traceback and return JSON error."""
+    traceback.print_exc()
+    return jsonify({
+        "error": "Internal server error",
+        "message": str(e),
+        "type": type(e).__name__
+    }), 500
 # ── Error Handlers ──
 @app.errorhandler(404)
 def not_found(error):
@@ -809,33 +858,25 @@ def not_found(error):
 def internal_error(error):
     return jsonify({"error": "Internal server error", "message": "Something went wrong"}), 500
 
+# ── Main ──
 # ── Initialize on Import (for gunicorn) ──
+# This runs when the module is imported by gunicorn
 if not os.path.exists(DB_PATH):
-    print("Database not found. Initializing...")
+    print("🗄️  Database not found. Initializing...")
     init_db()
     seed_products()
     seed_blog_posts()
     seed_reviews()
-    print("Database ready")
+    print("✅ Database ready")
+else:
+    print("🗄️  Database exists. Skipping initialization.")
 
 # ── Production Entry Point ──
+# Render and other platforms set the PORT environment variable
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     debug = os.environ.get("FLASK_ENV") != "production"
-    app.run(debug=debug, host="0.0.0.0", port=port)
 
-@app.route("/api/debug", methods=["GET"])
-def debug_info():
-    try:
-        db = get_db()
-        cursor = db.cursor()
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
-        tables = [t[0] for t in cursor.fetchall()]
-        cursor.execute("SELECT COUNT(*) FROM products")
-        count = cursor.fetchone()[0]
-        cursor.execute("SELECT id, name, tags FROM products LIMIT 1")
-        first = cursor.fetchone()
-        return jsonify({"tables": tables, "count": count, "first": dict(first) if first else None})
-    except Exception as e:
-        import traceback
-        return jsonify({"error": str(e), "traceback": traceback.format_exc()}), 500
+    print(f"🌿 PotHub Backend starting on port {port}")
+    print(f"📚 API endpoints available at /api/*")
+    app.run(debug=debug, host="0.0.0.0", port=port)
