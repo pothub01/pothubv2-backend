@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout — PotHub</title>
+<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/style.css\') }}">
+<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/responsive.css\') }}">
+<style>
+.checkout-layout{display:grid;grid-template-columns:1fr 420px;gap:64px;padding:60px 0}
+.checkout-logo{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;letter-spacing:4px;text-transform:uppercase;color:var(--black);text-decoration:none}
+.checkout-logo span{color:var(--gl)}
+.co-section-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;text-transform:uppercase;letter-spacing:-0.5px;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.co-step{width:28px;height:28px;background:var(--black);color:var(--white);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.form-group{margin-bottom:18px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-label{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--mid);margin-bottom:8px;display:block}
+.form-input{width:100%;background:var(--gray);border:1.5px solid var(--gray2);padding:14px 16px;font-size:14px;outline:none;border-radius:var(--r);transition:border-color .2s;font-family:'Barlow',sans-serif;color:var(--black)}
+.form-input:focus{border-color:var(--green);background:var(--white)}
+.form-input.error{border-color:var(--terra)}
+.form-error{font-size:11px;color:var(--terra);margin-top:4px;display:none}
+.form-input.error+.form-error{display:block}
+.form-select{width:100%;background:var(--gray);border:1.5px solid var(--gray2);padding:14px 16px;font-size:14px;outline:none;border-radius:var(--r);cursor:pointer;font-family:'Barlow',sans-serif;color:var(--black)}
+.payment-option{border:1.5px solid var(--gray2);padding:18px 20px;border-radius:var(--r);cursor:pointer;transition:border-color .2s;margin-bottom:10px;display:flex;align-items:center;gap:14px}
+.payment-option:hover{border-color:var(--mid)}
+.payment-option.selected{border-color:var(--green);background:rgba(76,175,80,.04)}
+.payment-option input{accent-color:var(--green);width:18px;height:18px}
+.payment-icon{font-size:24px}
+.payment-label{font-weight:600;font-size:14px}
+.payment-sub{font-size:12px;color:var(--mid)}
+.delivery-option{border:1.5px solid var(--gray2);padding:16px 20px;border-radius:var(--r);cursor:pointer;transition:border-color .2s;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.delivery-option.selected{border-color:var(--green);background:rgba(76,175,80,.04)}
+.delivery-option input{accent-color:var(--green)}
+/* ORDER SUMMARY SIDE */
+.order-summary{position:sticky;top:calc(var(--nav-h) + 24px);background:var(--gray);padding:40px;border-radius:var(--r)}
+.os-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;text-transform:uppercase;margin-bottom:24px}
+.os-item{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--gray2)}
+.os-thumb{width:56px;height:56px;background:var(--white);display:flex;align-items:center;justify-content:center;font-size:28px;border-radius:var(--r);position:relative;flex-shrink:0}
+.os-qty-badge{position:absolute;top:-6px;right:-6px;background:var(--mid);color:var(--white);width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.os-item-name{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;line-height:1.1}
+.os-item-meta{font-size:11px;color:var(--mid);letter-spacing:1px;text-transform:uppercase}
+.os-item-price{margin-left:auto;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;flex-shrink:0}
+.os-row{display:flex;justify-content:space-between;font-size:13px;margin-top:12px}
+.os-row .lbl{color:var(--mid);text-transform:uppercase;letter-spacing:1px;font-size:11px}
+.os-total{display:flex;justify-content:space-between;margin-top:16px;padding-top:16px;border-top:2px solid var(--black)}
+.os-total .lbl{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;text-transform:uppercase}
+.os-total .amt{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900}
+/* SUCCESS PAGE */
+.success-page{text-align:center;padding:100px 0}
+.success-icon{font-size:80px;margin-bottom:24px;animation:popIn .5s cubic-bezier(.16,1,.3,1)}
+@keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
+.success-title{font-family:'Barlow Condensed',sans-serif;font-size:64px;font-weight:900;text-transform:uppercase;letter-spacing:-2px;margin-bottom:16px;color:var(--green)}
+.order-num{background:var(--gray);display:inline-block;padding:12px 32px;font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;letter-spacing:3px;margin-bottom:32px}
+@media(max-width:960px){.checkout-layout{grid-template-columns:1fr}.order-summary{position:static}}
+@media(max-width:640px){.form-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div style="padding-top:var(--nav-h)">
+  <!-- CHECKOUT HEADER -->
+  <div style="background:var(--black);padding:20px 0;border-bottom:1px solid #222">
+    <div class="container" style="display:flex;align-items:center;justify-content:space-between">
+      <a href="/index" class="checkout-logo">POT<span>HUB</span></a>
+      <div style="display:flex;align-items:center;gap:24px">
+        <span style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4)">🔒 Secure Checkout</span>
+        <a href="/cart" style="font-size:12px;color:rgba(255,255,255,.4);letter-spacing:1px">← Back to Cart</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="checkout-main">
+    <div class="container">
+      <div class="checkout-layout">
+        <!-- LEFT: FORM -->
+        <div>
+          <!-- CONTACT -->
+          <div style="margin-bottom:40px">
+            <div class="co-section-title"><span class="co-step">1</span> Contact Information</div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">First Name *</label><input class="form-input" id="fname" type="text" placeholder="Juan"><div class="form-error">Required</div></div>
+              <div class="form-group"><label class="form-label">Last Name *</label><input class="form-input" id="lname" type="text" placeholder="Dela Cruz"><div class="form-error">Required</div></div>
+            </div>
+            <div class="form-group"><label class="form-label">Email Address *</label><input class="form-input" id="email" type="email" placeholder="juan@email.com"><div class="form-error">Valid email required</div></div>
+            <div class="form-group"><label class="form-label">Phone Number *</label><input class="form-input" id="phone" type="tel" placeholder="+63 9XX XXX XXXX"><div class="form-error">Required</div></div>
+          </div>
+          <!-- SHIPPING -->
+          <div style="margin-bottom:40px">
+            <div class="co-section-title"><span class="co-step">2</span> Shipping Address</div>
+            <div class="form-group"><label class="form-label">Address Line 1 *</label><input class="form-input" id="addr1" type="text" placeholder="House No., Street Name"><div class="form-error">Required</div></div>
+            <div class="form-group"><label class="form-label">Address Line 2</label><input class="form-input" id="addr2" type="text" placeholder="Barangay, Subdivision (optional)"></div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">City *</label><input class="form-input" id="city" type="text" placeholder="Manila"><div class="form-error">Required</div></div>
+              <div class="form-group"><label class="form-label">Province *</label>
+                <select class="form-select" id="province">
+                  <option value="">Select Province</option>
+                  <option>Metro Manila</option><option>Cebu</option><option>Davao del Sur</option>
+                  <option>Rizal</option><option>Laguna</option><option>Cavite</option>
+                  <option>Bulacan</option><option>Pampanga</option><option>Batangas</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">ZIP Code *</label><input class="form-input" id="zip" type="text" placeholder="1000"><div class="form-error">Required</div></div>
+              <div class="form-group"><label class="form-label">Country</label><input class="form-input" value="Philippines" readonly style="background:var(--gray2)"></div>
+            </div>
+          </div>
+          <!-- DELIVERY -->
+          <div style="margin-bottom:40px">
+            <div class="co-section-title"><span class="co-step">3</span> Delivery Method</div>
+            <div class="delivery-option selected" id="del-standard" onclick="selectDelivery('standard',this)">
+              <input type="radio" name="delivery" value="standard" checked>
+              <div>
+                <div style="font-weight:600;font-size:14px">Standard Delivery</div>
+                <div style="font-size:12px;color:var(--mid)">3–5 business days</div>
+              </div>
+              <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px">₱150</span>
+            </div>
+            <div class="delivery-option" id="del-express" onclick="selectDelivery('express',this)">
+              <input type="radio" name="delivery" value="express">
+              <div>
+                <div style="font-weight:600;font-size:14px">Express Delivery</div>
+                <div style="font-size:12px;color:var(--mid)">1–2 business days</div>
+              </div>
+              <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px">₱350</span>
+            </div>
+            <div class="delivery-option" id="del-free" onclick="selectDelivery('free',this)" style="${getCartTotal()>=1500?'':'opacity:.5;cursor:not-allowed'}">
+              <input type="radio" name="delivery" value="free" ${getCartTotal()<1500?'disabled':''}>
+              <div>
+                <div style="font-weight:600;font-size:14px">Free Shipping ${getCartTotal()<1500?'(₱1,500 min)':''}</div>
+                <div style="font-size:12px;color:var(--mid)">5–7 business days</div>
+              </div>
+              <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;color:var(--green)">Free</span>
+            </div>
+          </div>
+          <!-- PAYMENT -->
+          <div style="margin-bottom:40px">
+            <div class="co-section-title"><span class="co-step">4</span> Payment Method</div>
+            <div class="payment-option selected" onclick="selectPayment('card',this)">
+              <input type="radio" name="payment" value="card" checked>
+              <span class="payment-icon">💳</span>
+              <div><div class="payment-label">Credit / Debit Card</div><div class="payment-sub">Visa, Mastercard, JCB</div></div>
+            </div>
+            <div id="card-fields" style="background:var(--gray);padding:24px;border-radius:var(--r);margin-bottom:10px">
+              <div class="form-group"><label class="form-label">Card Number</label><input class="form-input" id="card-num" type="text" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCard(this)"></div>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label">Expiry</label><input class="form-input" id="card-exp" type="text" placeholder="MM/YY" maxlength="5"></div>
+                <div class="form-group"><label class="form-label">CVV</label><input class="form-input" id="card-cvv" type="text" placeholder="•••" maxlength="3"></div>
+              </div>
+              <div class="form-group"><label class="form-label">Cardholder Name</label><input class="form-input" id="card-name" type="text" placeholder="JUAN DELA CRUZ"></div>
+            </div>
+            <div class="payment-option" onclick="selectPayment('gcash',this)">
+              <input type="radio" name="payment" value="gcash">
+              <span class="payment-icon">📱</span>
+              <div><div class="payment-label">GCash</div><div class="payment-sub">Pay via GCash mobile wallet</div></div>
+            </div>
+            <div class="payment-option" onclick="selectPayment('cod',this)">
+              <input type="radio" name="payment" value="cod">
+              <span class="payment-icon">💵</span>
+              <div><div class="payment-label">Cash on Delivery</div><div class="payment-sub">Pay when your order arrives</div></div>
+            </div>
+          </div>
+          <!-- PLACE ORDER -->
+          <button class="btn btn-black btn-full" style="padding:20px;font-size:16px;letter-spacing:3px" onclick="placeOrder()">
+            Place Order →
+          </button>
+          <div style="text-align:center;margin-top:16px;font-size:12px;color:var(--mid)">
+            By placing your order you agree to our <a href="#" style="text-decoration:underline">Terms & Conditions</a> and <a href="#" style="text-decoration:underline">Privacy Policy</a>.
+          </div>
+        </div>
+        <!-- RIGHT: ORDER SUMMARY -->
+        <div>
+          <div class="order-summary">
+            <div class="os-title">Order Summary</div>
+            <div id="os-items"></div>
+            <div id="os-totals"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer-placeholder"></div>
+<script src="{{ url_for(\'static\', filename=\'js/components.js\') }}"></script>
+<script src="{{ url_for(\'static\', filename=\'js/app.js\') }}"></script>
+<script>
+injectComponents('');
+
+let deliveryCost = 150;
+let selectedPayment = 'card';
+
+function pageInit() {
+  renderOrderSummary();
+}
+
+function renderOrderSummary() {
+  const items = document.getElementById('os-items');
+  const totals = document.getElementById('os-totals');
+  if (!items || !totals) return;
+  const subtotal = getCartTotal();
+  const total    = subtotal + deliveryCost;
+
+  items.innerHTML = cart.map(item => `
+    <div class="os-item">
+      <div class="os-thumb">${item.icon}<span class="os-qty-badge">${item.qty}</span></div>
+      <div>
+        <div class="os-item-name">${item.name}</div>
+        <div class="os-item-meta">${[item.color,item.size].filter(Boolean).join(' · ')||item.category}</div>
+      </div>
+      <div class="os-item-price">₱${(item.price*item.qty).toLocaleString()}</div>
+    </div>`).join('') || '<div style="padding:20px 0;color:var(--mid);font-size:13px;text-align:center">No items in cart</div>';
+
+  totals.innerHTML = `
+    <div class="os-row"><span class="lbl">Subtotal</span><span>₱${subtotal.toLocaleString()}</span></div>
+    <div class="os-row"><span class="lbl">Shipping</span><span>₱${deliveryCost.toLocaleString()}</span></div>
+    <div class="os-total"><span class="lbl">Total</span><span class="amt">₱${total.toLocaleString()}</span></div>`;
+}
+
+function selectDelivery(type, el) {
+  document.querySelectorAll('.delivery-option').forEach(d => { d.classList.remove('selected'); d.querySelector('input').checked = false; });
+  el.classList.add('selected');
+  el.querySelector('input').checked = true;
+  deliveryCost = type === 'free' ? 0 : type === 'express' ? 350 : 150;
+  renderOrderSummary();
+}
+
+function selectPayment(type, el) {
+  selectedPayment = type;
+  document.querySelectorAll('.payment-option').forEach(p => { p.classList.remove('selected'); p.querySelector('input').checked = false; });
+  el.classList.add('selected');
+  el.querySelector('input').checked = true;
+  document.getElementById('card-fields').style.display = type === 'card' ? 'block' : 'none';
+}
+
+function formatCard(input) {
+  let v = input.value.replace(/\D/g,'').substring(0,16);
+  input.value = v.replace(/(.{4})/g,'$1 ').trim();
+}
+
+function validateForm() {
+  const required = ['fname','lname','email','phone','addr1','city','zip'];
+  let valid = true;
+  required.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const isEmpty = !el.value.trim();
+    const isEmail = id === 'email' && el.value && !el.value.includes('@');
+    el.classList.toggle('error', isEmpty || isEmail);
+    if (isEmpty || isEmail) valid = false;
+  });
+  if (!document.getElementById('province').value) { valid = false; showToast('<span class="toast-icon">⚠️</span> Please select a province.', 'error'); }
+  return valid;
+}
+
+function placeOrder() {
+  if (!cart.length) { showToast('<span class="toast-icon">🪴</span> Your cart is empty!', 'error'); return; }
+  if (!validateForm()) { showToast('<span class="toast-icon">⚠️</span> Please fill in all required fields.', 'error'); window.scrollTo({top:0,behavior:'smooth'}); return; }
+  const orderNum = 'PH-' + Date.now().toString().slice(-6);
+  localStorage.setItem('pothub_last_order', JSON.stringify({ num: orderNum, items: cart, total: getCartTotal() + deliveryCost }));
+  cart = []; saveCart();
+  showSuccess(orderNum);
+}
+
+function showSuccess(orderNum) {
+  document.getElementById('checkout-main').innerHTML = `
+    <div class="container">
+      <div class="success-page">
+        <div class="success-icon">✅</div>
+        <div class="success-title">Order<br>Confirmed!</div>
+        <p style="font-size:15px;font-weight:300;color:var(--mid);max-width:440px;margin:0 auto 28px;line-height:1.7">Thank you for your purchase! We've sent a confirmation to your email. Your plants are on their way. 🌿</p>
+        <div class="order-num">Order #${orderNum}</div>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <a href="/index" class="btn btn-black">Continue Shopping</a>
+          <a href="/shop" class="btn btn-ghost-dark">Explore More</a>
+        </div>
+      </div>
+    </div>`;
+}
+</script>
+</body>
+</html>

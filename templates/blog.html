@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — PotHub</title>
+<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/style.css\') }}">
+<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/responsive.css\') }}">
+<style>
+.blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.blog-hero-card{grid-column:1/-1;background:var(--black);min-height:520px;display:flex;align-items:flex-end;padding:64px;position:relative;overflow:hidden;cursor:pointer}
+.blog-hero-card::before{content:'🌿';font-size:360px;position:absolute;top:-40px;right:-20px;opacity:.05;line-height:1}
+.blog-hero-card:hover::before{opacity:.09}
+.bhc-inner{position:relative;z-index:1;max-width:680px}
+.blog-card{background:var(--gray);cursor:pointer;transition:transform .3s}
+.blog-card:hover{transform:translateY(-4px)}
+.blog-card:hover .bc-img-inner{transform:scale(1.06)}
+.bc-img{aspect-ratio:4/3;overflow:hidden;background:var(--gray2);display:flex;align-items:center;justify-content:center}
+.bc-img-inner{font-size:88px;transition:transform .5s ease}
+.bc-body{padding:28px}
+.bc-cat{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--green);margin-bottom:10px}
+.bc-title{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;text-transform:uppercase;letter-spacing:-0.5px;line-height:1.05;margin-bottom:12px}
+.bc-excerpt{font-size:13px;font-weight:300;line-height:1.7;color:var(--mid);margin-bottom:20px}
+.bc-foot{display:flex;align-items:center;justify-content:space-between}
+.bc-author{display:flex;align-items:center;gap:10px}
+.bc-avatar{width:32px;height:32px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--white);font-weight:700}
+.bc-name{font-size:12px;font-weight:600}
+.bc-date{font-size:11px;color:var(--mid);letter-spacing:1px}
+.bc-read{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--green)}
+.blog-sidebar{padding:80px 0}
+.blog-main-col{flex:1}
+.blog-aside{width:320px;flex-shrink:0}
+.aside-card{background:var(--gray);padding:32px;border-radius:var(--r);margin-bottom:28px}
+.aside-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;text-transform:uppercase;letter-spacing:-0.3px;margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid var(--black)}
+.popular-item{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--gray2);cursor:pointer}
+.popular-item:last-child{border-bottom:none}
+.popular-item:hover .pi-title{color:var(--green)}
+.pi-thumb{width:56px;height:56px;background:var(--gray2);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;border-radius:var(--r)}
+.pi-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;line-height:1.1;margin-bottom:4px;transition:color .2s}
+.pi-date{font-size:11px;color:var(--mid);letter-spacing:1px}
+.tag-cloud{display:flex;flex-wrap:wrap;gap:8px}
+.tag-pill{background:var(--white);border:1.5px solid var(--gray2);padding:6px 14px;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;border-radius:40px;cursor:pointer;transition:all .2s}
+.tag-pill:hover{background:var(--green);color:var(--white);border-color:var(--green)}
+.article-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:900;overflow-y:auto;opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s;backdrop-filter:blur(8px)}
+.article-modal.open{opacity:1;visibility:visible}
+.article-inner{background:var(--white);max-width:760px;margin:60px auto;border-radius:var(--r);overflow:hidden;animation:modalIn .4s cubic-bezier(.16,1,.3,1)}
+@keyframes modalIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.article-hero{background:var(--black);min-height:320px;display:flex;align-items:center;justify-content:center;font-size:160px;position:relative}
+.article-close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.1);border:none;color:var(--white);width:40px;height:40px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.article-body{padding:52px}
+.article-cat{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--green);margin-bottom:12px}
+.article-title{font-family:'Barlow Condensed',sans-serif;font-size:clamp(32px,5vw,56px);font-weight:900;text-transform:uppercase;letter-spacing:-1.5px;line-height:.9;margin-bottom:20px}
+.article-meta{display:flex;align-items:center;gap:16px;padding-bottom:24px;border-bottom:1px solid var(--gray2);margin-bottom:32px}
+.article-content p{font-size:15px;font-weight:300;line-height:1.9;color:#444;margin-bottom:20px}
+.article-content h3{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;text-transform:uppercase;letter-spacing:-0.5px;margin:32px 0 16px}
+@media(max-width:960px){.blog-grid{grid-template-columns:1fr}.blog-hero-card{min-height:360px;padding:40px}.blog-aside{display:none}}
+@media(max-width:640px){.blog-grid{gap:2px}}
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="page-hero">
+  <div class="container">
+    <div class="breadcrumb"><a href="/index">Home</a><span>/</span><span style="color:rgba(255,255,255,.6)">Blog</span></div>
+    <h1 class="display display-lg page-hero-title">THE POTHUB<br>JOURNAL</h1>
+    <p class="page-hero-sub">Plant styling, pot care, interior inspiration, and the green stories we love to tell.</p>
+  </div>
+</div>
+
+<!-- BLOG GRID -->
+<section class="section" style="padding-top:0">
+  <div class="container" style="padding:0;max-width:100%">
+    <div class="blog-grid" id="blog-grid"></div>
+  </div>
+</section>
+
+<!-- BLOG MAIN + SIDEBAR -->
+<section>
+  <div class="container">
+    <div style="display:flex;gap:48px;padding:80px 0;align-items:start">
+      <div style="flex:1">
+        <div class="eyebrow" style="margin-bottom:24px">More Stories</div>
+        <div id="more-posts" style="display:flex;flex-direction:column;gap:3px"></div>
+        <div style="margin-top:40px;text-align:center">
+          <button class="btn btn-ghost-dark" onclick="loadMore()">Load More Articles</button>
+        </div>
+      </div>
+      <!-- SIDEBAR -->
+      <div class="blog-aside">
+        <div class="aside-card">
+          <div class="aside-title">Popular Posts</div>
+          <div id="popular-posts"></div>
+        </div>
+        <div class="aside-card">
+          <div class="aside-title">Categories</div>
+          <div class="tag-cloud" id="tag-cloud"></div>
+        </div>
+        <div class="aside-card" style="background:var(--green)">
+          <div style="color:var(--white)">
+            <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:12px">Newsletter</div>
+            <div class="aside-title" style="color:var(--white);border-color:rgba(255,255,255,.2)">GROW YOUR INBOX</div>
+            <p style="font-size:13px;color:rgba(255,255,255,.65);margin-bottom:20px;font-weight:300;line-height:1.6">Weekly plant tips, new arrivals, and styling inspo.</p>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <input style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:var(--white);padding:12px 16px;font-size:13px;outline:none;border-radius:var(--r);" type="email" placeholder="your@email.com" id="blog-nl">
+              <button class="btn btn-white btn-sm" onclick="nlSubmit('blog-nl','blog-nl-success')">Subscribe</button>
+            </div>
+            <div id="blog-nl-success" style="display:none;margin-top:12px;font-size:12px;color:rgba(255,255,255,.8)">🌿 You're in!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARTICLE MODAL -->
+<div class="article-modal" id="article-modal" onclick="if(event.target===this)closeArticle()">
+  <div class="article-inner" id="article-inner"></div>
+</div>
+
+<div id="footer-placeholder"></div>
+<script src="{{ url_for(\'static\', filename=\'js/components.js\') }}"></script>
+<script src="{{ url_for(\'static\', filename=\'js/app.js\') }}"></script>
+<script>
+injectComponents('blog');
+
+const POSTS = [
+  { id:1, cat:'Interior Styling', title:'10 Ways to Style Pots in a Small Living Room', excerpt:'Small spaces deserve big plant energy. Here\'s how to use pots strategically to make your living room feel lush without feeling cluttered.', icon:'🏠', author:'Anna R.', date:'May 10, 2026', read:'5 min', tags:['styling','indoor'] },
+  { id:2, cat:'Plant Decor', title:'The Art of Grouping Plants: The Rule of Three', excerpt:'Grouping plants in odd numbers creates visual balance. Learn how to arrange pots of different heights, textures, and tones for a natural, curated look.', icon:'🌿', author:'Marco S.', date:'May 5, 2026', read:'4 min', tags:['decor','styling'] },
+  { id:3, cat:'Gardening Tips', title:'Why Terracotta is the Best Pot Material for Most Plants', excerpt:'Terracotta has been used for centuries — and for good reason. Its breathability, affordability, and earthy beauty make it the king of plant pots.', icon:'🏺', author:'Liza T.', date:'Apr 28, 2026', read:'6 min', tags:['terracotta','care'] },
+  { id:4, cat:'Pot Maintenance', title:'How to Clean Your Ceramic Pots Without Damaging the Glaze', excerpt:'A clean pot is a happy pot. We walk you through the safest, most effective methods for removing mineral buildup, mold, and stains from glazed ceramics.', icon:'✨', author:'Carlo L.', date:'Apr 20, 2026', read:'3 min', tags:['care','ceramic'] },
+  { id:5, cat:'Home Inspiration', title:'The Minimalist Home: How Plants Bring Warmth to Clean Spaces', excerpt:'Nordic-inspired interiors thrive on the contrast between clean white walls and the organic chaos of plants. Here\'s how to get the balance just right.', icon:'⬜', author:'Anna R.', date:'Apr 14, 2026', read:'7 min', tags:['minimalist','styling'] },
+  { id:6, cat:'Gardening Tips', title:'Choosing the Right Pot Size for Your Plant: A Complete Guide', excerpt:'Pot size matters more than most people think. Too big and your plant drowns; too small and it\'s rootbound. Here\'s the definitive sizing guide.', icon:'📏', author:'Liza T.', date:'Apr 7, 2026', read:'5 min', tags:['tips','care'] },
+  { id:7, cat:'Sustainability', title:'Our Journey to Zero-Plastic Packaging — And What We Learned', excerpt:'In 2024 we committed to eliminating all plastic from our supply chain. Here\'s the honest story of how we got there, the setbacks we faced, and what\'s next.', icon:'🌍', author:'Carlo L.', date:'Mar 30, 2026', read:'8 min', tags:['eco','sustainability'] },
+  { id:8, cat:'Plant Decor', title:'Hanging Planters: The Vertical Garden Revolution', excerpt:'When floor space runs out, go up! Hanging planters are having a massive moment in Philippine interiors. Here\'s how to style them beautifully.', icon:'🪴', author:'Marco S.', date:'Mar 22, 2026', read:'4 min', tags:['hanging','decor'] },
+];
+
+const ARTICLE_CONTENT = {
+  1: `<p>Small living rooms present a unique challenge for plant parents. Every centimeter counts, and the wrong pot placement can make a cozy space feel cramped. But here's the secret the best interior stylists know: plants actually make small spaces feel <em>bigger</em> when placed correctly.</p>
+<h3>1. Go Vertical</h3>
+<p>Floor space is precious. Use wall-mounted planters, hanging baskets, and tall shelving units to draw the eye upward. A vertical garden wall can transform a blank corner into a living installation without taking up any floor space at all.</p>
+<h3>2. Use the Rule of Odd Numbers</h3>
+<p>Always group plants in threes or fives — odd numbers create visual tension and feel more natural than even arrangements. Vary heights by at least 20cm between each pot for maximum impact.</p>
+<h3>3. Mirror Window Light</h3>
+<p>Place plants near windows on both sides to create symmetry. Not only does this maximize light for the plants, but it makes the window feel like a living frame — adding depth to the room.</p>`,
+};
+
+function openArticle(id) {
+  const post = POSTS.find(p => p.id === id);
+  if (!post) return;
+  const content = ARTICLE_CONTENT[id] || `<p>We're passionate about ${post.cat.toLowerCase()} and wanted to share everything we know. ${post.excerpt} Stay tuned for the full article — subscribe to our newsletter to get notified when it goes live!</p>`;
+  document.getElementById('article-inner').innerHTML = `
+    <div class="article-hero" style="position:relative">
+      ${post.icon}
+      <button class="article-close" onclick="closeArticle()">✕</button>
+    </div>
+    <div class="article-body">
+      <div class="article-cat">${post.cat}</div>
+      <div class="article-title">${post.title}</div>
+      <div class="article-meta">
+        <div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--white);font-size:12px;font-weight:700">${post.author[0]}</div><span style="font-size:13px;font-weight:600">${post.author}</span></div>
+        <span style="color:var(--mid);font-size:12px">${post.date}</span>
+        <span style="color:var(--mid);font-size:12px">·</span>
+        <span style="color:var(--mid);font-size:12px">${post.read} read</span>
+      </div>
+      <div class="article-content">${content}</div>
+      <div style="display:flex;gap:8px;margin-top:32px;flex-wrap:wrap">
+        ${post.tags.map(t => `<span class="tag-pill">#${t}</span>`).join('')}
+      </div>
+    </div>`;
+  document.getElementById('article-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeArticle() {
+  document.getElementById('article-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function pageInit() {
+  // Render hero + grid
+  const [hero, ...rest] = POSTS;
+  document.getElementById('blog-grid').innerHTML = `
+    <div class="blog-hero-card reveal" onclick="openArticle(${hero.id})">
+      <div class="bhc-inner">
+        <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gl);margin-bottom:14px">${hero.cat} · ${hero.read} read</div>
+        <h2 class="display display-md" style="color:var(--white);margin-bottom:18px">${hero.title}</h2>
+        <p style="font-size:15px;font-weight:300;color:rgba(255,255,255,.5);line-height:1.7;max-width:560px;margin-bottom:28px">${hero.excerpt}</p>
+        <div style="display:flex;align-items:center;gap:16px">
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:32px;height:32px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--white);font-size:14px;font-weight:700">${hero.author[0]}</div><span style="font-size:13px;color:rgba(255,255,255,.6);font-weight:500">${hero.author}</span></div>
+          <span style="color:rgba(255,255,255,.3);font-size:12px">${hero.date}</span>
+          <button class="btn btn-white btn-sm" onclick="event.stopPropagation();openArticle(${hero.id})">Read Article →</button>
+        </div>
+      </div>
+    </div>
+    ${rest.slice(0,2).map(p => blogCardHTML(p)).join('')}`;
+
+  // More posts
+  document.getElementById('more-posts').innerHTML = rest.slice(2).map(p => blogCardHTML(p)).join('');
+
+  // Popular
+  document.getElementById('popular-posts').innerHTML = POSTS.slice(0,4).map(p => `
+    <div class="popular-item" onclick="openArticle(${p.id})">
+      <div class="pi-thumb">${p.icon}</div>
+      <div><div class="pi-title">${p.title}</div><div class="pi-date">${p.date}</div></div>
+    </div>`).join('');
+
+  // Tags
+  const tags = [...new Set(POSTS.flatMap(p => p.tags))];
+  document.getElementById('tag-cloud').innerHTML = tags.map(t => `<span class="tag-pill">#${t}</span>`).join('');
+
+  setupReveal();
+}
+
+function blogCardHTML(p) {
+  return `<div class="blog-card reveal" onclick="openArticle(${p.id})">
+    <div class="bc-img"><div class="bc-img-inner">${p.icon}</div></div>
+    <div class="bc-body">
+      <div class="bc-cat">${p.cat}</div>
+      <div class="bc-title">${p.title}</div>
+      <p class="bc-excerpt">${p.excerpt}</p>
+      <div class="bc-foot">
+        <div class="bc-author"><div class="bc-avatar">${p.author[0]}</div><div><div class="bc-name">${p.author}</div><div class="bc-date">${p.date}</div></div></div>
+        <span class="bc-read">${p.read} →</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+let moreLoaded = false;
+function loadMore() {
+  if (moreLoaded) { showToast('<span class="toast-icon">📰</span> No more articles right now. Subscribe for updates!'); return; }
+  moreLoaded = true;
+  showToast('<span class="toast-icon">✓</span> All articles loaded!', 'success');
+}
+</script>
+</body>
+</html>

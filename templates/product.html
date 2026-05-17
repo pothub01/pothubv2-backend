@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product — PotHub</title>
+<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/style.css\') }}">
+<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/responsive.css\') }}">
+<style>
+.pd-layout { display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:start; padding:80px 0; }
+.pd-gallery { position:sticky; top:calc(var(--nav-h) + 24px); }
+.pd-main-img { background:var(--gray); aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; font-size:180px; border-radius:var(--r); margin-bottom:12px; overflow:hidden; position:relative; }
+.pd-zoom-hint { position:absolute; bottom:16px; right:16px; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--mid); background:var(--white); padding:6px 12px; border-radius:40px; }
+.pd-thumbs { display:flex; gap:8px; }
+.pd-thumb { width:80px; height:80px; background:var(--gray2); border-radius:var(--r); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:36px; border:2px solid transparent; transition:border-color .2s; flex-shrink:0; }
+.pd-thumb.active { border-color:var(--black); }
+.pd-info { }
+.pd-brand { font-size:11px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:var(--gl); margin-bottom:12px; }
+.pd-name { font-family:'Barlow Condensed',sans-serif; font-size:clamp(36px,4vw,56px); font-weight:900; text-transform:uppercase; letter-spacing:-1.5px; line-height:.95; margin-bottom:16px; }
+.pd-rating-row { display:flex; align-items:center; gap:12px; margin-bottom:20px; }
+.pd-stars { color:var(--gold); font-size:18px; }
+.pd-review-count { font-size:13px; color:var(--mid); text-decoration:underline; cursor:pointer; }
+.pd-price-row { display:flex; align-items:baseline; gap:12px; margin-bottom:28px; }
+.pd-price { font-family:'Barlow Condensed',sans-serif; font-size:40px; font-weight:900; }
+.pd-orig { font-family:'Barlow Condensed',sans-serif; font-size:22px; color:var(--mid); text-decoration:line-through; }
+.pd-save { background:var(--terra); color:var(--white); font-size:12px; font-weight:700; padding:4px 10px; border-radius:var(--r); letter-spacing:1px; }
+.pd-desc { font-size:15px; font-weight:300; line-height:1.8; color:var(--mid); margin-bottom:32px; }
+.pd-option-label { font-size:11px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; }
+.pd-option-label span { font-weight:400; color:var(--mid); }
+.pd-variants { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:28px; }
+.pd-variant-btn { padding:10px 20px; border:1.5px solid var(--gray2); font-size:13px; font-weight:500; letter-spacing:1px; text-transform:uppercase; border-radius:var(--r); cursor:pointer; background:none; transition:all .2s; font-family:'Barlow',sans-serif; color:var(--black); }
+.pd-variant-btn:hover { border-color:var(--black); }
+.pd-variant-btn.active { border-color:var(--black); background:var(--black); color:var(--white); }
+.pd-variant-btn.out { opacity:.4; cursor:not-allowed; text-decoration:line-through; }
+.pd-qty-row { display:flex; align-items:center; gap:16px; margin-bottom:28px; }
+.pd-qty { display:flex; align-items:center; background:var(--gray); border-radius:var(--r); overflow:hidden; }
+.pd-qty button { width:44px; height:48px; background:none; border:none; font-size:20px; cursor:pointer; transition:background .2s; }
+.pd-qty button:hover { background:var(--gray2); }
+.pd-qty input { width:52px; text-align:center; border:none; background:none; font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:700; outline:none; color:var(--black); }
+.pd-stock { font-size:12px; color:var(--gl); font-weight:500; }
+.pd-stock.low { color:var(--terra); }
+.pd-actions { display:flex; gap:10px; margin-bottom:24px; }
+.pd-wish-btn { width:52px; height:52px; background:var(--gray); border:1.5px solid var(--gray2); border-radius:var(--r); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; transition:all .2s; }
+.pd-wish-btn:hover, .pd-wish-btn.wished { background:var(--terra); border-color:var(--terra); }
+.pd-meta { border-top:1px solid var(--gray2); padding-top:24px; }
+.pd-meta-row { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--gray); font-size:13px; }
+.pd-meta-row:last-child { border-bottom:none; }
+.pd-meta-key { color:var(--mid); font-weight:500; }
+.pd-meta-val { font-weight:500; text-align:right; }
+.pd-perks { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:28px; }
+.pd-perk { background:var(--gray); padding:16px; border-radius:var(--r); text-align:center; }
+.pd-perk-icon { font-size:24px; margin-bottom:6px; }
+.pd-perk-text { font-size:11px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--mid); }
+.tab-row { display:flex; gap:0; border-bottom:2px solid var(--gray2); margin-bottom:32px; }
+.tab-btn { background:none; border:none; padding:14px 24px; font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--mid); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; transition:color .2s, border-color .2s; }
+.tab-btn.active { color:var(--black); border-bottom-color:var(--black); }
+.tab-panel { display:none; }
+.tab-panel.active { display:block; }
+.review-card { padding:24px 0; border-bottom:1px solid var(--gray2); }
+.review-card:last-child { border-bottom:none; }
+.review-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.review-author { font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:700; text-transform:uppercase; }
+.review-date { font-size:12px; color:var(--mid); }
+.review-stars { color:var(--gold); font-size:14px; margin-bottom:8px; }
+.review-text { font-size:14px; font-weight:300; line-height:1.7; color:var(--mid); }
+.spec-table { width:100%; }
+.spec-table tr:nth-child(even) { background:var(--gray); }
+.spec-table td { padding:12px 16px; font-size:13px; }
+.spec-table td:first-child { font-weight:600; letter-spacing:1px; text-transform:uppercase; font-size:11px; color:var(--mid); width:40%; }
+
+@media(max-width:900px) {
+  .pd-layout { grid-template-columns:1fr; gap:32px; }
+  .pd-gallery { position:static; }
+  .pd-perks { grid-template-columns:1fr 1fr 1fr; }
+}
+@media(max-width:560px) {
+  .pd-perks { grid-template-columns:1fr; }
+  .pd-actions { flex-wrap:wrap; }
+  .pd-actions .btn { flex:1; min-width:calc(50% - 5px); }
+}
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="container">
+  <div class="breadcrumb" style="padding-top:88px">
+    <a href="/index">Home</a><span>/</span>
+    <a href="/shop">Shop</a><span>/</span>
+    <span id="bc-name">Product</span>
+  </div>
+
+  <div class="pd-layout" id="pd-layout">
+    <div style="text-align:center;padding:100px 0;color:var(--mid);grid-column:1/-1">
+      <div style="font-size:48px;margin-bottom:16px">🪴</div>
+      <div style="font-size:14px;letter-spacing:2px;text-transform:uppercase">Loading product...</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div id="pd-tabs" style="display:none;padding-bottom:80px">
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="switchTab('description',this)">Description</button>
+      <button class="tab-btn" onclick="switchTab('specs',this)">Specifications</button>
+      <button class="tab-btn" onclick="switchTab('reviews',this)">Reviews (<span id="review-count">0</span>)</button>
+      <button class="tab-btn" onclick="switchTab('care',this)">Plant Care</button>
+    </div>
+    <div class="tab-panel active" id="tab-description"></div>
+    <div class="tab-panel" id="tab-specs"></div>
+    <div class="tab-panel" id="tab-reviews"></div>
+    <div class="tab-panel" id="tab-care">
+      <div style="max-width:640px">
+        <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700;text-transform:uppercase;margin-bottom:20px">Plant Care Guide</h3>
+        <p style="font-size:14px;font-weight:300;line-height:1.8;color:var(--mid);margin-bottom:16px">Our pots are designed to support healthy plant growth. Here are some tips to get the most out of your PotHub planter:</p>
+        <ul style="display:flex;flex-direction:column;gap:12px;list-style:disc;padding-left:20px;color:var(--mid);font-size:14px;line-height:1.7;font-weight:300">
+          <li>Ensure drainage holes are clear before planting.</li>
+          <li>Use a saucer to catch excess water and prevent surface damage.</li>
+          <li>For ceramic pots, avoid thermal shock by not moving from cold to hot environments suddenly.</li>
+          <li>Clean with a damp cloth. Avoid harsh chemical cleaners.</li>
+          <li>For terracotta pots, soak in water for 30 minutes before first use.</li>
+          <li>Store outdoor pots indoors during extreme weather to extend lifespan.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- RELATED PRODUCTS -->
+  <div id="related-section" style="display:none;padding-bottom:80px">
+    <div class="eyebrow" style="margin-bottom:12px">You May Also Like</div>
+    <h2 class="display display-sm" style="margin-bottom:36px">RELATED PRODUCTS</h2>
+    <div class="products-grid" id="related-grid"></div>
+  </div>
+</div>
+
+<div class="newsletter" style="margin-top:0">
+  <div class="container">
+    <div class="eyebrow nl-eye">Join the Community</div>
+    <h2 class="display display-md nl-title">GET <span>EXCLUSIVE</span><br>DEALS.</h2>
+    <p class="nl-sub">Members get early access to new drops and exclusive discounts.</p>
+    <div class="nl-form">
+      <input class="nl-input" id="nl-email" type="email" placeholder="your@email.com">
+      <button class="nl-btn" onclick="nlSubmit()">Subscribe</button>
+    </div>
+    <div class="nl-success" id="nl-success">🌿 You're in!</div>
+  </div>
+</div>
+
+<div id="footer-placeholder"></div>
+<script src="{{ url_for(\'static\', filename=\'js/components.js\') }}"></script>
+<script src="{{ url_for(\'static\', filename=\'js/app.js\') }}"></script>
+<script>
+injectComponents('shop');
+
+let currentProduct = null;
+let selectedQty = 1;
+let selectedColor = '';
+let selectedSize = '';
+
+const REVIEWS = [
+  { author:'Maria S.', rating:5, date:'May 2026', text:'Absolutely stunning pot. The craftsmanship is exceptional and it arrived perfectly packaged.' },
+  { author:'Juan R.', rating:5, date:'April 2026', text:'Great quality and very fast delivery. Exactly as described. My monstera loves it!' },
+  { author:'Andrea L.', rating:4, date:'April 2026', text:'Beautiful design. Slightly smaller than I expected but still very happy with the purchase.' },
+  { author:'Paolo M.', rating:5, date:'March 2026', text:'Bought as a gift. The recipient was thrilled. Will definitely shop here again.' },
+];
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+function renderProduct(p) {
+  currentProduct = p;
+  selectedColor = p.colors[0];
+  selectedSize = p.sizes[0];
+  document.title = `${p.name} — PotHub`;
+  document.getElementById('bc-name').textContent = p.name;
+
+  const save = p.original ? Math.round((1 - p.price / p.original) * 100) : 0;
+
+  document.getElementById('pd-layout').innerHTML = `
+    <!-- GALLERY -->
+    <div class="pd-gallery">
+      <div class="pd-main-img" id="pd-main-img">
+        <span style="font-size:180px">${p.icon}</span>
+        <div class="pd-zoom-hint">🔍 Hover to zoom</div>
+      </div>
+      <div class="pd-thumbs">
+        ${[p.icon, p.icon, p.icon, p.icon].map((ic,i) => `<div class="pd-thumb ${i===0?'active':''}" onclick="selectThumb(this,${i})">${ic}</div>`).join('')}
+      </div>
+    </div>
+
+    <!-- INFO -->
+    <div class="pd-info">
+      <div class="pd-brand">PotHub · ${p.sku}</div>
+      <h1 class="pd-name">${p.name}</h1>
+      <div class="pd-rating-row">
+        <span class="pd-stars">${'★'.repeat(Math.floor(p.rating))}${p.rating%1>=.5?'½':''}</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700">${p.rating}</span>
+        <span class="pd-review-count" onclick="switchTab('reviews',document.querySelectorAll('.tab-btn')[2])">${p.reviews} reviews</span>
+      </div>
+      <div class="pd-price-row">
+        <span class="pd-price">₱${p.price.toLocaleString()}</span>
+        ${p.original ? `<span class="pd-orig">₱${p.original.toLocaleString()}</span><span class="pd-save">-${save}%</span>` : ''}
+      </div>
+      <p class="pd-desc">${p.desc}</p>
+
+      <div class="pd-perks">
+        <div class="pd-perk"><div class="pd-perk-icon">🚚</div><div class="pd-perk-text">Free Shipping over ₱1,500</div></div>
+        <div class="pd-perk"><div class="pd-perk-icon">🔄</div><div class="pd-perk-text">30-Day Returns</div></div>
+        <div class="pd-perk"><div class="pd-perk-icon">🛡️</div><div class="pd-perk-text">1 Year Warranty</div></div>
+      </div>
+
+      <!-- COLOR -->
+      <div class="pd-option-label">Color <span id="color-label">${p.colors[0]}</span></div>
+      <div class="pd-variants" id="color-variants">
+        ${p.colors.map((c,i) => `<button class="pd-variant-btn ${i===0?'active':''}" onclick="selectColor('${c}',this)">${c}</button>`).join('')}
+      </div>
+
+      <!-- SIZE -->
+      <div class="pd-option-label">Size <span id="size-label">${p.sizes[0]}</span></div>
+      <div class="pd-variants" id="size-variants">
+        ${p.sizes.map((s,i) => `<button class="pd-variant-btn ${i===0?'active':''}" onclick="selectSize('${s}',this)">${s}</button>`).join('')}
+      </div>
+
+      <!-- QTY -->
+      <div class="pd-qty-row">
+        <div class="pd-qty">
+          <button onclick="changeQtyPD(-1)">−</button>
+          <input type="number" id="pd-qty-input" value="1" min="1" max="${p.stock}" onchange="selectedQty=parseInt(this.value)||1">
+          <button onclick="changeQtyPD(1)">+</button>
+        </div>
+        <span class="pd-stock ${p.stock<=5?'low':''}">${p.stock>0 ? (p.stock<=5?`⚠️ Only ${p.stock} left`:`✓ In Stock (${p.stock})`) : '✗ Out of Stock'}</span>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="pd-actions">
+        <button class="btn btn-black" style="flex:1" onclick="handleAddToCart()" ${p.stock===0?'disabled':''}>+ Add to Cart</button>
+        <button class="btn btn-green" style="flex:1" onclick="handleBuyNow()" ${p.stock===0?'disabled':''}>Buy Now</button>
+        <button class="pd-wish-btn ${isWished(p.id)?'wished':''}" id="pd-wish" onclick="handleWish(${p.id})">
+          ${isWished(p.id)?'❤️':'🤍'}
+        </button>
+      </div>
+
+      <!-- META -->
+      <div class="pd-meta">
+        <div class="pd-meta-row"><span class="pd-meta-key">SKU</span><span class="pd-meta-val">${p.sku}</span></div>
+        <div class="pd-meta-row"><span class="pd-meta-key">Category</span><span class="pd-meta-val">${p.category}</span></div>
+        <div class="pd-meta-row"><span class="pd-meta-key">Tags</span><span class="pd-meta-val">${p.tags.join(', ')}</span></div>
+        <div class="pd-meta-row"><span class="pd-meta-key">Stock</span><span class="pd-meta-val">${p.stock} units</span></div>
+      </div>
+    </div>`;
+
+  // Tabs
+  document.getElementById('review-count').textContent = p.reviews;
+  document.getElementById('tab-description').innerHTML = `<div style="max-width:640px"><p style="font-size:15px;font-weight:300;line-height:1.9;color:var(--mid)">${p.desc} Each piece is carefully inspected before dispatch. Ships in protective packaging to ensure safe delivery.</p><br><p style="font-size:15px;font-weight:300;line-height:1.9;color:var(--mid)">Perfect for indoor and outdoor use. Pairs beautifully with trailing plants, succulents, tropical foliage, and more. Drainage hole included for healthy root systems.</p></div>`;
+  document.getElementById('tab-specs').innerHTML = `<table class="spec-table"><tr><td>Material</td><td>${p.category.charAt(0).toUpperCase()+p.category.slice(1)}</td></tr><tr><td>Available Sizes</td><td>${p.sizes.join(', ')}</td></tr><tr><td>Colors</td><td>${p.colors.join(', ')}</td></tr><tr><td>Drainage Hole</td><td>Yes (included)</td></tr><tr><td>Weight</td><td>0.8–2.4 kg depending on size</td></tr><tr><td>Origin</td><td>Philippines</td></tr><tr><td>Care</td><td>Wipe clean with damp cloth</td></tr><tr><td>Warranty</td><td>1 Year Manufacturing Defects</td></tr></table>`;
+  document.getElementById('tab-reviews').innerHTML = REVIEWS.slice(0,4).map(r => `<div class="review-card"><div class="review-head"><span class="review-author">${r.author}</span><span class="review-date">${r.date}</span></div><div class="review-stars">${'★'.repeat(r.rating)}</div><p class="review-text">${r.text}</p></div>`).join('');
+  document.getElementById('pd-tabs').style.display = 'block';
+
+  // Related products
+  const related = PRODUCTS.filter(x => x.id !== p.id && (x.category === p.category || x.tags.some(t => p.tags.includes(t)))).slice(0,4);
+  if (related.length) {
+    document.getElementById('related-section').style.display = 'block';
+    document.getElementById('related-grid').innerHTML = related.map(productCardHTML).join('');
+  }
+  updateWishBtns();
+  setupReveal();
+  addRecentlyViewed(p.id);
+}
+
+function selectThumb(el, idx) {
+  document.querySelectorAll('.pd-thumb').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+function selectColor(c, btn) {
+  selectedColor = c;
+  document.querySelectorAll('#color-variants .pd-variant-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('color-label').textContent = c;
+}
+function selectSize(s, btn) {
+  selectedSize = s;
+  document.querySelectorAll('#size-variants .pd-variant-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('size-label').textContent = s;
+}
+function changeQtyPD(d) {
+  const inp = document.getElementById('pd-qty-input');
+  const newVal = Math.max(1, Math.min(currentProduct.stock, (parseInt(inp.value)||1) + d));
+  inp.value = newVal; selectedQty = newVal;
+}
+function handleAddToCart() {
+  if (!currentProduct) return;
+  addToCart(currentProduct.id, selectedQty, selectedColor, selectedSize);
+  openCartDrawer();
+}
+function handleBuyNow() {
+  if (!currentProduct) return;
+  addToCart(currentProduct.id, selectedQty, selectedColor, selectedSize);
+  window.location.href = 'checkout.html';
+}
+function handleWish(id) {
+  toggleWishlist(id);
+  const btn = document.getElementById('pd-wish');
+  if (btn) { btn.innerHTML = isWished(id) ? '❤️' : '🤍'; btn.classList.toggle('wished', isWished(id)); }
+}
+
+function pageInit() {
+  const id = parseInt(new URLSearchParams(window.location.search).get('id')) || 1;
+  const p = PRODUCTS.find(x => x.id === id);
+  if (p) renderProduct(p);
+  else { document.getElementById('pd-layout').innerHTML = `<div style="text-align:center;padding:80px;grid-column:1/-1"><div style="font-size:48px;margin-bottom:16px">❌</div><div class="display display-sm">Product not found</div><a href="/shop" class="btn btn-black" style="margin-top:24px">Back to Shop</a></div>`; }
+}
+</script>
+</body>
+</html>

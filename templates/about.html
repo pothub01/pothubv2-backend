@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — PotHub</title>
+<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/style.css\') }}">
+<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/responsive.css\') }}">
+<style>
+.about-hero{background:var(--black);min-height:90vh;display:grid;grid-template-columns:1fr 1fr;position:relative;overflow:hidden}
+.ah-left{display:flex;flex-direction:column;justify-content:center;padding:120px 80px 80px;position:relative;z-index:1}
+.ah-right{background:var(--green);display:flex;align-items:center;justify-content:center;font-size:280px;position:relative;overflow:hidden}
+.ah-right::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 70%,rgba(0,0,0,.3),transparent)}
+.mission-section{padding:120px 0;background:var(--beige)}
+.mission-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.mission-img{background:var(--gray);border-radius:var(--r);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:180px}
+.values-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.value-card{background:var(--gray);padding:56px 40px;text-align:center;transition:background .3s;cursor:default}
+.value-card:hover{background:var(--black)}
+.value-card:hover .vc-title,.value-card:hover .vc-desc{color:var(--white)}
+.value-card:hover .vc-desc{color:rgba(255,255,255,.5)}
+.vc-icon{font-size:56px;margin-bottom:24px;display:block;transition:transform .3s}
+.value-card:hover .vc-icon{transform:scale(1.1) rotate(5deg)}
+.vc-title{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;text-transform:uppercase;letter-spacing:-0.5px;margin-bottom:12px;transition:color .3s}
+.vc-desc{font-size:14px;font-weight:300;line-height:1.7;color:var(--mid);transition:color .3s}
+.timeline{padding:120px 0}
+.tl-item{display:grid;grid-template-columns:1fr 80px 1fr;gap:32px;align-items:start;margin-bottom:0}
+.tl-content{padding:0 0 60px}
+.tl-content.right{padding:0 0 60px}
+.tl-year-col{display:flex;flex-direction:column;align-items:center;position:relative}
+.tl-dot{width:20px;height:20px;background:var(--green);border-radius:50%;flex-shrink:0;margin-top:8px}
+.tl-line{width:2px;flex:1;background:var(--gray2);margin-top:8px}
+.tl-item:last-child .tl-line{display:none}
+.tl-year{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;text-align:center;color:var(--green)}
+.tl-title{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;text-transform:uppercase;letter-spacing:-0.5px;margin-bottom:10px}
+.tl-desc{font-size:14px;font-weight:300;line-height:1.7;color:var(--mid)}
+.team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:3px}
+.team-card{background:var(--gray);padding:40px 32px;text-align:center;transition:transform .3s}
+.team-card:hover{transform:translateY(-4px)}
+.team-avatar{width:80px;height:80px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 20px}
+.team-name{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;text-transform:uppercase;letter-spacing:-0.5px;margin-bottom:6px}
+.team-role{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--mid)}
+.sus-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.sus-card{border:1.5px solid var(--gray2);padding:36px;border-radius:var(--r)}
+.sus-num{font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:900;color:var(--green);margin-bottom:8px;line-height:1}
+.sus-label{font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--mid);margin-bottom:12px}
+.sus-desc{font-size:14px;font-weight:300;line-height:1.6;color:var(--mid)}
+@media(max-width:960px){
+  .about-hero{grid-template-columns:1fr}
+  .ah-right{min-height:300px;font-size:160px}
+  .ah-left{padding:120px 40px 60px}
+  .mission-grid{grid-template-columns:1fr}
+  .values-grid{grid-template-columns:1fr}
+  .tl-item{grid-template-columns:1fr 48px auto}
+  .team-grid{grid-template-columns:1fr 1fr}
+  .sus-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:640px){
+  .team-grid,.sus-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<!-- HERO -->
+<div class="about-hero">
+  <div class="ah-left">
+    <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gl);margin-bottom:24px">Our Story</div>
+    <h1 class="display display-lg" style="color:var(--white);margin-bottom:28px">WE LIVE<br>FOR<br>PLANTS.</h1>
+    <p style="font-size:16px;font-weight:300;color:rgba(255,255,255,.5);line-height:1.8;max-width:440px;margin-bottom:48px">PotHub was born from a simple belief: every plant deserves a home as beautiful as the life it brings. We design and curate premium pots that transform spaces and nurture growth.</p>
+    <div style="display:flex;gap:40px">
+      <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:48px;font-weight:900;color:var(--gl);line-height:1">2019</div><div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4)">Founded</div></div>
+      <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:48px;font-weight:900;color:var(--gl);line-height:1">10K+</div><div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4)">Customers</div></div>
+      <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:48px;font-weight:900;color:var(--gl);line-height:1">500+</div><div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4)">Products</div></div>
+    </div>
+  </div>
+  <div class="ah-right">🌿</div>
+</div>
+
+<!-- MISSION -->
+<section class="mission-section" id="mission">
+  <div class="container">
+    <div class="mission-grid">
+      <div class="reveal">
+        <div class="eyebrow" style="margin-bottom:16px;color:var(--terra)">Our Mission</div>
+        <h2 class="display display-md" style="margin-bottom:24px">BRINGING<br>NATURE<br>INDOORS.</h2>
+        <p style="font-size:15px;font-weight:300;line-height:1.8;color:var(--mid);margin-bottom:28px">We believe that plants make spaces come alive. Our mission is to craft the most beautiful, functional, and sustainable pots that help every plant parent create their own indoor paradise.</p>
+        <p style="font-size:15px;font-weight:300;line-height:1.8;color:var(--mid);margin-bottom:36px">From humble beginnings in a small Manila studio, we've grown into the Philippines' most trusted plant pot brand — without ever compromising on craft, quality, or love for the green world.</p>
+        <a href="/shop" class="btn btn-black">Shop Our Story</a>
+      </div>
+      <div class="mission-img reveal">🌱</div>
+    </div>
+  </div>
+</section>
+
+<!-- VALUES -->
+<section class="section" style="padding:0">
+  <div class="container" style="padding:0;max-width:100%">
+    <div class="values-grid">
+      <div class="value-card reveal">
+        <span class="vc-icon">🌿</span>
+        <div class="vc-title">Sustainability</div>
+        <p class="vc-desc">We source materials responsibly and design for longevity — because good pots shouldn't end up in landfills.</p>
+      </div>
+      <div class="value-card reveal">
+        <span class="vc-icon">✋</span>
+        <div class="vc-title">Craftsmanship</div>
+        <p class="vc-desc">Every pot is shaped, glazed, and inspected by hand. We collaborate with skilled Filipino artisans.</p>
+      </div>
+      <div class="value-card reveal">
+        <span class="vc-icon">💚</span>
+        <div class="vc-title">Community</div>
+        <p class="vc-desc">We're more than a store — we're a community of plant parents sharing a love for green, growing things.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section class="timeline" id="timeline">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:72px">
+      <div class="eyebrow reveal" style="margin-bottom:12px">How We Grew</div>
+      <h2 class="display display-md reveal">OUR JOURNEY</h2>
+    </div>
+    <div style="max-width:800px;margin:0 auto">
+      <div class="tl-item reveal">
+        <div class="tl-content">
+          <div class="tl-year">2019</div>
+          <div class="tl-title">The First Pot</div>
+          <p class="tl-desc">PotHub started in a small Manila studio apartment. Founder Anna Reyes hand-threw her first terracotta pot and posted it online. It sold in 4 minutes.</p>
+        </div>
+        <div class="tl-year-col"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div></div>
+      </div>
+      <div class="tl-item reveal">
+        <div></div>
+        <div class="tl-year-col"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-content right">
+          <div class="tl-year">2020</div>
+          <div class="tl-title">Going Online</div>
+          <p class="tl-desc">During the pandemic, indoor gardening exploded. PotHub launched its online store and hit ₱1M in sales in the first 3 months.</p>
+        </div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-content">
+          <div class="tl-year">2021</div>
+          <div class="tl-title">The Studio Opens</div>
+          <p class="tl-desc">We opened our first physical studio in Makati, featuring a ceramics workshop, plant market, and the full PotHub catalog.</p>
+        </div>
+        <div class="tl-year-col"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div></div>
+      </div>
+      <div class="tl-item reveal">
+        <div></div>
+        <div class="tl-year-col"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-content right">
+          <div class="tl-year">2023</div>
+          <div class="tl-title">10,000 Plant Parents</div>
+          <p class="tl-desc">We crossed 10,000 happy customers and expanded our catalog to 500+ unique pot styles. National shipping launched.</p>
+        </div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-content">
+          <div class="tl-year">2026</div>
+          <div class="tl-title">The Future Is Green</div>
+          <p class="tl-desc">We launched our Eco Series, introduced biodegradable packaging, and set a goal to plant 10,000 trees by 2027.</p>
+        </div>
+        <div class="tl-year-col"><div class="tl-dot"></div></div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="section" style="background:var(--beige)">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:56px">
+      <div class="eyebrow reveal" style="margin-bottom:12px">The People</div>
+      <h2 class="display display-md reveal">MEET THE TEAM</h2>
+    </div>
+    <div class="team-grid">
+      <div class="team-card reveal"><div class="team-avatar">👩</div><div class="team-name">Anna Reyes</div><div class="team-role">Founder & CEO</div></div>
+      <div class="team-card reveal"><div class="team-avatar">👨</div><div class="team-name">Marco Santos</div><div class="team-role">Head of Design</div></div>
+      <div class="team-card reveal"><div class="team-avatar">👩</div><div class="team-name">Liza Tan</div><div class="team-role">Lead Ceramicist</div></div>
+      <div class="team-card reveal"><div class="team-avatar">👨</div><div class="team-name">Carlo Lim</div><div class="team-role">Sustainability Lead</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SUSTAINABILITY -->
+<section class="section" id="sustainability">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:56px">
+      <div class="eyebrow reveal" style="margin-bottom:12px">Our Commitment</div>
+      <h2 class="display display-md reveal">SUSTAINABILITY<br>BY DESIGN</h2>
+    </div>
+    <div class="sus-grid">
+      <div class="sus-card reveal"><div class="sus-num">100%</div><div class="sus-label">Eco Packaging</div><p class="sus-desc">All packaging is biodegradable, recycled, or reusable. Zero plastic in our supply chain.</p></div>
+      <div class="sus-card reveal"><div class="sus-num">10K</div><div class="sus-label">Trees by 2027</div><p class="sus-desc">For every 10 pots sold, we plant a tree in partnership with local reforestation programs.</p></div>
+      <div class="sus-card reveal"><div class="sus-num">40%</div><div class="sus-label">Local Materials</div><p class="sus-desc">40% of our materials are sourced within the Philippines, supporting local artisans and communities.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="split">
+  <div class="split-panel split-dark">
+    <div class="sp-eye">Join the Family</div>
+    <div class="sp-head">GROW<br>WITH US.</div>
+    <div class="sp-desc">Every purchase supports Filipino artisans, sustainable practices, and the planet we all share.</div>
+    <a href="/shop" class="btn btn-white" style="z-index:1;position:relative;width:fit-content">Shop Now</a>
+  </div>
+  <div class="split-panel split-green">
+    <div class="sp-eye">Stay Connected</div>
+    <div class="sp-head">JOIN OUR<br>COMMUNITY.</div>
+    <div class="sp-desc">Follow us @pothubph for plant tips, new drops, and a daily dose of green inspiration.</div>
+    <a href="/contact" class="btn btn-ghost" style="z-index:1;position:relative;width:fit-content">Contact Us</a>
+  </div>
+</div>
+
+<div id="footer-placeholder"></div>
+<script src="{{ url_for(\'static\', filename=\'js/components.js\') }}"></script>
+<script src="{{ url_for(\'static\', filename=\'js/app.js\') }}"></script>
+<script>
+injectComponents('about');
+function pageInit() { setupReveal(); }
+</script>
+</body>
+</html>

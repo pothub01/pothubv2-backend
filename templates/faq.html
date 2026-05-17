@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ — PotHub</title>
+<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/style.css\') }}">
+<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/responsive.css\') }}">
+<style>
+.faq-layout{display:grid;grid-template-columns:240px 1fr;gap:64px;padding:80px 0;align-items:start}
+.faq-nav{position:sticky;top:calc(var(--nav-h)+32px)}
+.faq-nav-link{display:block;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:10px 0;border-bottom:1px solid var(--gray2);color:var(--mid);cursor:pointer;transition:color .2s}
+.faq-nav-link:hover,.faq-nav-link.active{color:var(--green)}
+.faq-section{margin-bottom:64px}
+.faq-section-title{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;text-transform:uppercase;letter-spacing:-1px;margin-bottom:28px;padding-bottom:16px;border-bottom:2px solid var(--black)}
+.faq-item{border-bottom:1px solid var(--gray2)}
+.faq-q{width:100%;background:none;border:none;text-align:left;padding:20px 0;font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;text-transform:uppercase;letter-spacing:-0.3px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:16px;transition:color .2s}
+.faq-q:hover{color:var(--green)}
+.faq-q-icon{font-size:20px;transition:transform .3s;flex-shrink:0;color:var(--mid)}
+.faq-item.open .faq-q-icon{transform:rotate(45deg);color:var(--green)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s}
+.faq-item.open .faq-a{max-height:500px;padding-bottom:20px}
+.faq-a p{font-size:14px;font-weight:300;line-height:1.8;color:var(--mid)}
+.faq-a a{color:var(--green);text-decoration:underline}
+.search-bar-faq{display:flex;gap:0;margin-bottom:48px;max-width:500px}
+.search-bar-faq input{flex:1;background:var(--gray);border:1.5px solid var(--gray2);border-right:none;padding:14px 18px;font-size:14px;outline:none;border-radius:var(--r) 0 0 var(--r);font-family:'Barlow',sans-serif}
+.search-bar-faq input:focus{border-color:var(--green)}
+.search-bar-faq button{background:var(--black);color:var(--white);border:none;padding:14px 24px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:0 var(--r) var(--r) 0}
+@media(max-width:960px){.faq-layout{grid-template-columns:1fr}.faq-nav{position:static;display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px;border:none}.faq-nav-link{border:1.5px solid var(--gray2);padding:8px 16px;border-radius:40px;font-size:13px}}
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="page-hero">
+  <div class="container">
+    <div class="breadcrumb"><a href="/index">Home</a><span>/</span><span style="color:rgba(255,255,255,.6)">FAQ</span></div>
+    <h1 class="display display-lg page-hero-title">FREQUENTLY<br>ASKED</h1>
+    <p class="page-hero-sub">Everything you need to know about PotHub, our products, and your orders.</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="faq-layout">
+    <!-- NAV -->
+    <div class="faq-nav">
+      <a class="faq-nav-link active" onclick="scrollFaq('shipping')">Shipping</a>
+      <a class="faq-nav-link" onclick="scrollFaq('returns')">Returns</a>
+      <a class="faq-nav-link" onclick="scrollFaq('products')">Products</a>
+      <a class="faq-nav-link" onclick="scrollFaq('care')">Plant Care</a>
+      <a class="faq-nav-link" onclick="scrollFaq('orders')">Orders</a>
+      <a class="faq-nav-link" onclick="scrollFaq('payments')">Payments</a>
+    </div>
+    <!-- FAQS -->
+    <div>
+      <div class="search-bar-faq">
+        <input type="text" id="faq-search" placeholder="Search FAQ..." oninput="searchFaq(this.value)">
+        <button onclick="searchFaq(document.getElementById('faq-search').value)">Search</button>
+      </div>
+      <div id="faq-content"></div>
+    </div>
+  </div>
+</div>
+
+<!-- STILL NEED HELP -->
+<section class="section-sm" style="background:var(--beige)">
+  <div class="container" style="text-align:center">
+    <div class="eyebrow" style="margin-bottom:12px">Still need help?</div>
+    <h3 class="display display-sm" style="margin-bottom:16px">WE'RE HERE FOR YOU</h3>
+    <p style="color:var(--mid);font-weight:300;margin-bottom:32px;max-width:400px;margin-left:auto;margin-right:auto">Can't find what you're looking for? Our plant-loving support team is ready to help.</p>
+    <a href="/contact" class="btn btn-black">Contact Support</a>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+<script src="{{ url_for(\'static\', filename=\'js/components.js\') }}"></script>
+<script src="{{ url_for(\'static\', filename=\'js/app.js\') }}"></script>
+<script>
+injectComponents('');
+
+const FAQS = {
+  shipping: {
+    title: 'Shipping',
+    items: [
+      { q:'How long does delivery take?', a:'Standard delivery takes 3–5 business days within Metro Manila and 5–7 business days for provincial areas. Express delivery (1–2 days) is available at checkout for an additional ₱200.' },
+      { q:'Do you offer free shipping?', a:'Yes! Orders over ₱1,500 qualify for free standard shipping anywhere in the Philippines. Use code <strong>GROWFREE</strong> at checkout.' },
+      { q:'Do you ship internationally?', a:'Not yet, but we\'re working on it! We currently ship nationwide across the Philippines. Sign up to our newsletter to be notified when international shipping launches.' },
+      { q:'How are fragile items packaged?', a:'All ceramic and terracotta pots are wrapped in bubble wrap, nestled in foam inserts, and placed in double-walled cardboard boxes. We have less than 0.3% breakage rate.' },
+      { q:'Can I track my order?', a:'Yes! Once your order ships, you\'ll receive a tracking link via email and SMS. You can also track your order from your account dashboard.' },
+    ]
+  },
+  returns: {
+    title: 'Returns & Exchanges',
+    items: [
+      { q:'What is your return policy?', a:'We accept returns within 30 days of delivery for unused, undamaged items in original packaging. Sale items are final sale.' },
+      { q:'My pot arrived broken. What do I do?', a:'We\'re so sorry! Please send a photo of the damage to hello@pothub.ph within 48 hours of delivery. We\'ll send a replacement or issue a full refund immediately — no questions asked.' },
+      { q:'How do I start a return?', a:'Email hello@pothub.ph with your order number and reason for return. Our team will provide a prepaid return label within 24 hours.' },
+      { q:'When will I receive my refund?', a:'Refunds are processed within 3–5 business days of receiving the returned item. The credit will appear in your account within 7–10 business days depending on your bank.' },
+    ]
+  },
+  products: {
+    title: 'Products',
+    items: [
+      { q:'Are your pots food-safe?', a:'Our ceramic and terracotta pots are decorative planters — not food containers. They are plant-safe and non-toxic, but not designed for food storage.' },
+      { q:'Do pots come with drainage holes?', a:'Most of our pots include pre-drilled drainage holes. This is noted in each product description. Some decorative pots are sold without drainage holes as cache pots.' },
+      { q:'Are the pots handmade?', a:'Yes! All our terracotta and ceramic pieces are handthrown or hand-shaped by Filipino artisans. Each piece may have slight variations — that\'s the beauty of handcraft.' },
+      { q:'What sizes are available?', a:'We offer sizes from XS (suitable for succulents) to XL (for large tropical plants). Each product page includes exact dimensions to help you choose the right fit.' },
+      { q:'Can I order custom or bulk pots?', a:'Absolutely! We offer custom glazing, engraving, and bulk pricing for events, businesses, and wedding favors. Contact us at hello@pothub.ph for a quote.' },
+    ]
+  },
+  care: {
+    title: 'Plant & Pot Care',
+    items: [
+      { q:'How do I clean my ceramic pot?', a:'Wipe with a damp cloth for regular cleaning. For stubborn stains, use a mild soap solution. Avoid abrasive scrubbers that can scratch the glaze. Do not put in the dishwasher.' },
+      { q:'Can terracotta pots be left outside?', a:'Terracotta pots can handle outdoor conditions but should be brought indoors during heavy rainfall or freezing temperatures to prevent cracking.' },
+      { q:'How do I prevent water staining on terracotta?', a:'White mineral deposits are natural on terracotta — they show the pot is breathing! You can scrub with white vinegar and a brush, or embrace the rustic patina.' },
+      { q:'What plants work best in terracotta?', a:'Succulents, cacti, herbs, lavender, and most drought-tolerant plants love terracotta\'s breathability. Avoid terracotta for moisture-loving plants like ferns.' },
+    ]
+  },
+  orders: {
+    title: 'Orders',
+    items: [
+      { q:'Can I modify or cancel my order?', a:'You can modify or cancel your order within 2 hours of placing it by contacting hello@pothub.ph. After that, orders enter our fulfillment process and cannot be changed.' },
+      { q:'I entered the wrong address. Help!', a:'Contact us immediately at hello@pothub.ph or call +63 2 8888 POTS. If the order hasn\'t shipped yet, we can update the address at no charge.' },
+      { q:'Do you have a loyalty program?', a:'Yes! PotHub Rewards launches in Q3 2026. Earn points on every purchase and redeem them for discounts. Sign up to our newsletter to get early access.' },
+    ]
+  },
+  payments: {
+    title: 'Payments',
+    items: [
+      { q:'What payment methods do you accept?', a:'We accept Visa, Mastercard, JCB, GCash, Maya, bank transfer, and Cash on Delivery (COD) for Metro Manila orders.' },
+      { q:'Is online payment secure?', a:'Yes. Our checkout uses SSL encryption and is PCI-DSS compliant. We never store your full card details.' },
+      { q:'Do you offer installment plans?', a:'Yes! We partner with BillEase and Atome for 0% interest installment plans on orders over ₱2,000. Select your preferred plan at checkout.' },
+      { q:'Can I use multiple payment methods?', a:'Currently we support one payment method per order. You can use a coupon code in addition to your chosen payment method.' },
+    ]
+  },
+};
+
+function renderFaqs(filter = '') {
+  const content = document.getElementById('faq-content');
+  let html = '';
+  Object.entries(FAQS).forEach(([key, section]) => {
+    const items = filter
+      ? section.items.filter(i => i.q.toLowerCase().includes(filter) || i.a.toLowerCase().includes(filter))
+      : section.items;
+    if (!items.length) return;
+    html += `<div class="faq-section" id="faq-${key}">
+      <div class="faq-section-title">${section.title}</div>
+      ${items.map((item, i) => `
+        <div class="faq-item" id="faq-${key}-${i}">
+          <button class="faq-q" onclick="toggleFaq('faq-${key}-${i}')">
+            <span>${item.q}</span>
+            <span class="faq-q-icon">+</span>
+          </button>
+          <div class="faq-a"><p>${item.a}</p></div>
+        </div>`).join('')}
+    </div>`;
+  });
+  content.innerHTML = html || '<div style="padding:40px 0;color:var(--mid);font-size:14px">No results found. Try a different search term.</div>';
+}
+
+function toggleFaq(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const isOpen = el.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!isOpen) el.classList.add('open');
+}
+
+function searchFaq(q) {
+  renderFaqs(q.toLowerCase().trim());
+}
+
+function scrollFaq(key) {
+  document.querySelectorAll('.faq-nav-link').forEach(l => l.classList.remove('active'));
+  event.target.classList.add('active');
+  const el = document.getElementById('faq-' + key);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function pageInit() {
+  renderFaqs();
+}
+</script>
+</body>
+</html>

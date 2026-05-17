@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop — PotHub | Premium Plant Pots & Planters</title>
+<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/style.css\') }}">
+<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/responsive.css\') }}">
+<style>
+.shop-layout { display:grid; grid-template-columns:260px 1fr; gap:40px; align-items:start; }
+.sidebar { position:sticky; top:calc(var(--nav-h) + 80px); background:var(--white); }
+.sidebar-section { padding-bottom:28px; margin-bottom:28px; border-bottom:1px solid var(--gray2); }
+.sidebar-section:last-child { border-bottom:none; }
+.sidebar-title { font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:700; text-transform:uppercase; letter-spacing:2px; margin-bottom:16px; }
+.sidebar-option { display:flex; align-items:center; gap:10px; padding:6px 0; cursor:pointer; font-size:13px; color:var(--mid); transition:color .2s; }
+.sidebar-option:hover, .sidebar-option.active { color:var(--black); }
+.sidebar-option input[type=checkbox] { width:16px; height:16px; accent-color:var(--green); cursor:pointer; }
+.price-range { display:flex; flex-direction:column; gap:12px; }
+.price-inputs { display:flex; gap:10px; align-items:center; }
+.price-input { width:90px; padding:8px 12px; border:1.5px solid var(--gray2); font-size:13px; outline:none; transition:border-color .2s; font-family:'Barlow',sans-serif; background:var(--white); color:var(--black); }
+.price-input:focus { border-color:var(--black); }
+.results-bar { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px; }
+.results-count { font-size:13px; color:var(--mid); letter-spacing:1px; }
+.active-filters { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
+.filter-chip { display:flex; align-items:center; gap:6px; background:var(--black); color:var(--white); padding:6px 12px; font-size:11px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; border-radius:40px; }
+.filter-chip button { background:none; border:none; color:rgba(255,255,255,.6); font-size:14px; line-height:1; cursor:pointer; }
+.sort-bar { display:flex; align-items:center; gap:12px; }
+.view-toggle { display:flex; gap:4px; }
+.view-btn { background:var(--gray); border:none; width:36px; height:36px; display:flex; align-items:center; justify-content:center; font-size:14px; cursor:pointer; border-radius:var(--r); transition:background .2s; }
+.view-btn.active { background:var(--black); color:var(--white); }
+.load-more { display:flex; justify-content:center; margin-top:48px; }
+.quick-view-modal { position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:800; opacity:0; visibility:hidden; transition:opacity .3s, visibility .3s; backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; padding:24px; }
+.quick-view-modal.open { opacity:1; visibility:visible; }
+.qv-inner { background:var(--white); max-width:900px; width:100%; display:grid; grid-template-columns:1fr 1fr; border-radius:4px; overflow:hidden; animation:modalIn .4s cubic-bezier(.16,1,.3,1); max-height:90vh; overflow-y:auto; }
+@keyframes modalIn { from{opacity:0;transform:scale(.95)} to{opacity:1;transform:scale(1)} }
+.qv-img { background:var(--gray); display:flex; align-items:center; justify-content:center; font-size:120px; min-height:420px; }
+.qv-body { padding:48px 40px; position:relative; overflow-y:auto; }
+.qv-close { position:absolute; top:20px; right:20px; background:none; border:none; font-size:22px; color:var(--mid); cursor:pointer; }
+.qv-close:hover { color:var(--black); }
+.color-swatch { width:28px; height:28px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:border-color .2s; }
+.color-swatch.active { border-color:var(--black); }
+.no-results { text-align:center; padding:80px 40px; grid-column:1/-1; }
+.no-results-icon { font-size:72px; opacity:.2; margin-bottom:20px; }
+.no-results-title { font-family:'Barlow Condensed',sans-serif; font-size:32px; font-weight:800; text-transform:uppercase; margin-bottom:10px; }
+
+@media(max-width:900px) {
+  .shop-layout { grid-template-columns:1fr; }
+  .sidebar { position:static; }
+  .qv-inner { grid-template-columns:1fr; }
+  .qv-img { min-height:240px; font-size:80px; }
+}
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="container">
+    <div class="breadcrumb"><a href="/index">Home</a><span>/</span>Shop</div>
+    <h1 class="display display-lg page-hero-title">SHOP<br>ALL POTS</h1>
+    <p class="page-hero-sub">Discover our full collection of premium pots, planters & accessories.</p>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <div class="container">
+    <button class="filter-btn active" onclick="setCategory('all',this)">All</button>
+    <button class="filter-btn" onclick="setCategory('ceramic',this)">Ceramic</button>
+    <button class="filter-btn" onclick="setCategory('terracotta',this)">Terracotta</button>
+    <button class="filter-btn" onclick="setCategory('hanging',this)">Hanging</button>
+    <button class="filter-btn" onclick="setCategory('concrete',this)">Concrete</button>
+    <button class="filter-btn" onclick="setCategory('luxury',this)">Luxury</button>
+    <button class="filter-btn" onclick="setCategory('eco',this)">Eco</button>
+    <div class="filter-sep"></div>
+    <select class="sort-select" onchange="setSort(this.value)">
+      <option value="featured">Featured</option>
+      <option value="price-asc">Price: Low to High</option>
+      <option value="price-desc">Price: High to Low</option>
+      <option value="rating">Top Rated</option>
+      <option value="reviews">Most Reviewed</option>
+      <option value="new">Newest</option>
+    </select>
+  </div>
+</div>
+
+<!-- SHOP CONTENT -->
+<section class="section">
+  <div class="container">
+    <div class="shop-layout">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-title">Price Range</div>
+          <div class="price-range">
+            <div class="price-inputs">
+              <input class="price-input" type="number" id="price-min" placeholder="Min" min="0">
+              <span style="color:var(--mid);font-size:13px">—</span>
+              <input class="price-input" type="number" id="price-max" placeholder="Max" max="99999">
+            </div>
+            <button class="btn btn-ghost-dark btn-sm" onclick="applyPriceFilter()">Apply</button>
+          </div>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Tags</div>
+          <label class="sidebar-option"><input type="checkbox" value="indoor" onchange="toggleTag('indoor')"> Indoor</label>
+          <label class="sidebar-option"><input type="checkbox" value="outdoor" onchange="toggleTag('outdoor')"> Outdoor</label>
+          <label class="sidebar-option"><input type="checkbox" value="bestseller" onchange="toggleTag('bestseller')"> Bestsellers</label>
+          <label class="sidebar-option"><input type="checkbox" value="new" onchange="toggleTag('new')"> New Arrivals</label>
+          <label class="sidebar-option"><input type="checkbox" value="sale" onchange="toggleTag('sale')"> On Sale</label>
+          <label class="sidebar-option"><input type="checkbox" value="luxury" onchange="toggleTag('luxury')"> Luxury</label>
+          <label class="sidebar-option"><input type="checkbox" value="trending" onchange="toggleTag('trending')"> Trending</label>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Rating</div>
+          <label class="sidebar-option"><input type="radio" name="rating" value="4.5" onchange="setMinRating(4.5)"> ★★★★★ 4.5+</label>
+          <label class="sidebar-option"><input type="radio" name="rating" value="4" onchange="setMinRating(4)"> ★★★★ 4.0+</label>
+          <label class="sidebar-option"><input type="radio" name="rating" value="0" onchange="setMinRating(0)"> All Ratings</label>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Stock</div>
+          <label class="sidebar-option"><input type="checkbox" onchange="setInStock(this.checked)"> In Stock Only</label>
+        </div>
+        <button class="btn btn-ghost-dark btn-sm btn-full" onclick="clearAllFilters()">Clear All Filters</button>
+      </aside>
+
+      <!-- MAIN GRID -->
+      <div>
+        <div class="active-filters" id="active-filters"></div>
+        <div class="results-bar">
+          <span class="results-count" id="results-count">0 products</span>
+          <div class="sort-bar">
+            <div class="view-toggle">
+              <button class="view-btn active" onclick="setView('grid',this)" title="Grid view">⊞</button>
+              <button class="view-btn" onclick="setView('list',this)" title="List view">☰</button>
+            </div>
+          </div>
+        </div>
+        <div class="products-grid" id="shop-grid"></div>
+        <div class="load-more">
+          <button class="btn btn-ghost-dark" id="load-more-btn" onclick="loadMore()" style="display:none">Load More Products</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUICK VIEW MODAL -->
+<div class="quick-view-modal" id="qv-modal">
+  <div class="qv-inner">
+    <div class="qv-img" id="qv-img">🪴</div>
+    <div class="qv-body">
+      <button class="qv-close" onclick="closeQV()">✕</button>
+      <div id="qv-content"></div>
+    </div>
+  </div>
+</div>
+
+<div id="footer-placeholder"></div>
+<script src="{{ url_for(\'static\', filename=\'js/components.js\') }}"></script>
+<script src="{{ url_for(\'static\', filename=\'js/app.js\') }}"></script>
+<script>
+injectComponents('shop');
+
+let activeCategory = 'all';
+let activeTags = [];
+let activeSort = 'featured';
+let priceMin = 0, priceMax = 999999;
+let minRating = 0;
+let inStockOnly = false;
+let page = 1;
+const PER_PAGE = 8;
+
+function getFiltered() {
+  let list = [...PRODUCTS];
+  if (activeCategory !== 'all') list = list.filter(p => p.category === activeCategory);
+  if (activeTags.length) list = list.filter(p => activeTags.every(t => p.tags.includes(t)));
+  list = list.filter(p => p.price >= priceMin && p.price <= priceMax);
+  list = list.filter(p => p.rating >= minRating);
+  if (inStockOnly) list = list.filter(p => p.stock > 0);
+  switch(activeSort) {
+    case 'price-asc':  list.sort((a,b) => a.price - b.price); break;
+    case 'price-desc': list.sort((a,b) => b.price - a.price); break;
+    case 'rating':     list.sort((a,b) => b.rating - a.rating); break;
+    case 'reviews':    list.sort((a,b) => b.reviews - a.reviews); break;
+    case 'new':        list = list.filter(p => p.tags.includes('new')).concat(list.filter(p => !p.tags.includes('new'))); break;
+  }
+  return list;
+}
+
+function renderShop() {
+  const list = getFiltered();
+  const paged = list.slice(0, page * PER_PAGE);
+  const grid = document.getElementById('shop-grid');
+  if (!list.length) {
+    grid.innerHTML = `<div class="no-results"><div class="no-results-icon">🪴</div><div class="no-results-title">No products found</div><p style="color:var(--mid);margin-bottom:20px">Try adjusting your filters.</p><button class="btn btn-black" onclick="clearAllFilters()">Clear Filters</button></div>`;
+    document.getElementById('results-count').textContent = '0 products';
+    document.getElementById('load-more-btn').style.display = 'none';
+    return;
+  }
+  grid.innerHTML = paged.map(productCardHTML).join('');
+  document.getElementById('results-count').textContent = `${list.length} product${list.length !== 1 ? 's' : ''}`;
+  document.getElementById('load-more-btn').style.display = paged.length < list.length ? 'inline-flex' : 'none';
+  updateWishBtns();
+  setupReveal();
+}
+
+function renderActiveFilters() {
+  const chips = [];
+  if (activeCategory !== 'all') chips.push(`<div class="filter-chip">${activeCategory} <button onclick="setCategory('all', document.querySelector('.filter-btn'))">×</button></div>`);
+  activeTags.forEach(t => chips.push(`<div class="filter-chip">${t} <button onclick="removeTag('${t}')">×</button></div>`));
+  if (priceMin > 0 || priceMax < 999999) chips.push(`<div class="filter-chip">₱${priceMin}–₱${priceMax} <button onclick="resetPrice()">×</button></div>`);
+  document.getElementById('active-filters').innerHTML = chips.join('');
+}
+
+function setCategory(cat, btn) {
+  activeCategory = cat;
+  page = 1;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderShop();
+  renderActiveFilters();
+}
+
+function toggleTag(tag) {
+  if (activeTags.includes(tag)) activeTags = activeTags.filter(t => t !== tag);
+  else activeTags.push(tag);
+  page = 1;
+  renderShop();
+  renderActiveFilters();
+}
+
+function removeTag(tag) {
+  activeTags = activeTags.filter(t => t !== tag);
+  document.querySelectorAll('.sidebar-option input[type=checkbox]').forEach(cb => { if (cb.value === tag) cb.checked = false; });
+  renderShop();
+  renderActiveFilters();
+}
+
+function setSort(val) { activeSort = val; page = 1; renderShop(); }
+function applyPriceFilter() {
+  priceMin = parseInt(document.getElementById('price-min').value) || 0;
+  priceMax = parseInt(document.getElementById('price-max').value) || 999999;
+  page = 1; renderShop(); renderActiveFilters();
+}
+function resetPrice() {
+  priceMin = 0; priceMax = 999999;
+  document.getElementById('price-min').value = '';
+  document.getElementById('price-max').value = '';
+  renderShop(); renderActiveFilters();
+}
+function setMinRating(r) { minRating = r; page = 1; renderShop(); }
+function setInStock(v) { inStockOnly = v; page = 1; renderShop(); }
+function loadMore() { page++; renderShop(); }
+function setView(v, btn) {
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const g = document.getElementById('shop-grid');
+  g.classList.toggle('cols-1', v === 'list');
+}
+function clearAllFilters() {
+  activeCategory = 'all'; activeTags = []; priceMin = 0; priceMax = 999999; minRating = 0; inStockOnly = false; page = 1;
+  document.querySelectorAll('.filter-btn').forEach((b,i) => b.classList.toggle('active', i===0));
+  document.querySelectorAll('.sidebar-option input').forEach(i => i.checked = false);
+  document.getElementById('price-min').value = ''; document.getElementById('price-max').value = '';
+  renderShop(); renderActiveFilters();
+}
+
+// Quick View
+function openQV(id) {
+  const p = PRODUCTS.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('qv-img').innerHTML = `<span style="font-size:120px">${p.icon}</span>`;
+  document.getElementById('qv-content').innerHTML = `
+    <div class="eyebrow" style="margin-bottom:8px">${p.category}</div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:34px;font-weight:900;text-transform:uppercase;letter-spacing:-1px;margin-bottom:8px">${p.name}</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <span style="color:var(--gold);">${'★'.repeat(Math.floor(p.rating))}</span>
+      <span style="font-size:12px;color:var(--mid)">(${p.reviews} reviews)</span>
+    </div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700;margin-bottom:16px">₱${p.price.toLocaleString()}${p.original?`<span style="font-size:16px;color:var(--mid);text-decoration:line-through;margin-left:8px">₱${p.original.toLocaleString()}</span>`:''}</div>
+    <p style="font-size:14px;font-weight:300;line-height:1.7;color:var(--mid);margin-bottom:24px">${p.desc}</p>
+    <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--mid);margin-bottom:10px">Size</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px">${p.sizes.map((s,i)=>`<button class="variant-btn ${i===0?'active':''}" onclick="this.parentElement.querySelectorAll('.variant-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">${s}</button>`).join('')}</div>
+    <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--mid);margin-bottom:10px">Color</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px">${p.colors.map((c,i)=>`<button class="variant-btn ${i===0?'active':''}" onclick="this.parentElement.querySelectorAll('.variant-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">${c}</button>`).join('')}</div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-black" style="flex:1" onclick="addToCart(${p.id}); openCartDrawer(); closeQV()">+ Add to Cart</button>
+      <button class="btn btn-ghost-dark" onclick="window.location.href='product.html?id=${p.id}'">View Details</button>
+    </div>
+    <div style="margin-top:16px;font-size:12px;color:var(--mid)">SKU: ${p.sku} · Stock: ${p.stock > 0 ? p.stock+' available' : '<span style=color:var(--terra)>Out of stock</span>'}</div>`;
+  document.getElementById('qv-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeQV() { document.getElementById('qv-modal').classList.remove('open'); document.body.style.overflow = ''; }
+document.getElementById('qv-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeQV(); });
+
+function pageInit() {
+  // Read URL params
+  const params = new URLSearchParams(window.location.search);
+  const catParam = params.get('cat');
+  const tagParam = params.get('tag');
+  const qParam = params.get('q');
+  if (catParam) { activeCategory = catParam; document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.textContent.trim().toLowerCase() === catParam)); }
+  if (tagParam) { activeTags = [tagParam]; }
+  if (qParam) { activeTags = [qParam]; }
+  renderShop();
+  renderActiveFilters();
+
+  // Override productCardHTML's onclick to add quick view button
+  const origCard = productCardHTML;
+  window.productCardHTML = function(p) {
+    const html = origCard(p);
+    // inject quick view link
+    return html.replace('</div>\n    </div>', `<div style="margin-top:8px"><button style="background:none;border:none;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mid);cursor:pointer;text-decoration:underline" onclick="event.stopPropagation();openQV(${p.id})">Quick View</button></div></div>\n    </div>`);
+  };
+}
+</script>
+</body>
+</html>

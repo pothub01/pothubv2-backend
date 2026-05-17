@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wishlist — PotHub</title>
+<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/style.css\') }}">
+<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/responsive.css\') }}">
+<style>
+.wish-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:40px;flex-wrap:wrap;gap:16px}
+.wish-title{font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:900;text-transform:uppercase;letter-spacing:-2px;line-height:.9}
+.wish-count{font-size:13px;color:var(--mid);letter-spacing:1px;margin-top:8px}
+.wish-actions{display:flex;gap:12px}
+.wish-empty{text-align:center;padding:120px 0}
+.wish-empty-icon{font-size:80px;opacity:.12;margin-bottom:28px}
+.wish-empty-title{font-family:'Barlow Condensed',sans-serif;font-size:48px;font-weight:900;text-transform:uppercase;letter-spacing:-1.5px;margin-bottom:16px}
+.wish-empty-sub{color:var(--mid);font-size:15px;font-weight:300;max-width:360px;margin:0 auto 40px;line-height:1.7}
+.wish-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:3px}
+.wish-card{background:var(--gray);position:relative;border-radius:var(--r);overflow:hidden;transition:transform .3s}
+.wish-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,.1)}
+.wish-card:hover .wc-img-inner{transform:scale(1.06)}
+.wc-img{aspect-ratio:1/1;background:var(--gray2);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.wc-img-inner{font-size:100px;transition:transform .5s ease}
+.wc-remove{position:absolute;top:12px;right:12px;background:var(--white);border:none;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.1);transition:background .2s,transform .2s}
+.wc-remove:hover{background:var(--terra);transform:scale(1.1)}
+.wc-badge{position:absolute;top:12px;left:12px}
+.wc-info{padding:20px 20px 24px}
+.wc-cat{font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--mid);margin-bottom:6px}
+.wc-name{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;text-transform:uppercase;line-height:1.1;margin-bottom:8px;cursor:pointer}
+.wc-name:hover{color:var(--green)}
+.wc-rating{display:flex;align-items:center;gap:6px;margin-bottom:14px}
+.wc-foot{display:flex;align-items:center;justify-content:space-between}
+.wc-price{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700}
+.wc-orig{font-size:13px;color:var(--mid);text-decoration:line-through;margin-left:6px}
+.wc-atc{background:var(--black);color:var(--white);border:none;padding:10px 20px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:var(--r);transition:background .2s}
+.wc-atc:hover{background:var(--green)}
+/* SHARE PANEL */
+.share-panel{background:var(--beige);padding:48px;text-align:center;border-radius:var(--r);margin-top:60px}
+.share-title{font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;text-transform:uppercase;letter-spacing:-1px;margin-bottom:12px}
+.share-sub{color:var(--mid);font-size:14px;font-weight:300;margin-bottom:28px}
+.share-link-box{display:flex;max-width:480px;margin:0 auto;gap:0}
+.share-link-input{flex:1;background:var(--white);border:1.5px solid var(--gray2);border-right:none;padding:12px 16px;font-size:13px;outline:none;color:var(--mid);border-radius:var(--r) 0 0 var(--r)}
+.share-copy-btn{background:var(--black);color:var(--white);border:none;padding:12px 20px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:background .2s;border-radius:0 var(--r) var(--r) 0}
+.share-copy-btn:hover{background:var(--green)}
+/* RECENTLY VIEWED */
+.rv-strip{padding:80px 0;background:var(--beige)}
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="page-hero">
+  <div class="container">
+    <div class="breadcrumb"><a href="/index">Home</a><span>/</span><span style="color:rgba(255,255,255,.6)">Wishlist</span></div>
+    <h1 class="display display-lg page-hero-title">MY<br>WISHLIST</h1>
+    <p class="page-hero-sub">Your saved pots and planters — ready when you are.</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div id="wish-main"></div>
+
+    <!-- SHARE PANEL -->
+    <div class="share-panel reveal" id="share-panel" style="display:none">
+      <div class="share-title">Share Your Wishlist</div>
+      <p class="share-sub">Send your wishlist to friends and family — perfect for birthdays and special occasions.</p>
+      <div class="share-link-box">
+        <input class="share-link-input" id="share-link" readonly value="https://pothub.ph/wishlist/share/user123">
+        <button class="share-copy-btn" onclick="copyShareLink()">Copy Link</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RECENTLY VIEWED -->
+<div class="rv-strip" id="rv-section" style="display:none">
+  <div class="container">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:36px">
+      <div>
+        <div class="eyebrow" style="margin-bottom:8px">Based on Your Browsing</div>
+        <h3 class="display display-sm">YOU MAY LOVE</h3>
+      </div>
+      <a href="/shop" class="btn btn-ghost-dark btn-sm">View All</a>
+    </div>
+    <div class="wish-grid" id="rv-grid"></div>
+  </div>
+</div>
+
+<!-- EMPTY SUGGESTIONS -->
+<section class="section" id="suggestions-section" style="display:none">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:48px">
+      <div class="eyebrow" style="margin-bottom:12px">Just For You</div>
+      <h3 class="display display-md">STAFF PICKS</h3>
+    </div>
+    <div class="wish-grid" id="suggestions-grid"></div>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+<script src="{{ url_for(\'static\', filename=\'js/components.js\') }}"></script>
+<script src="{{ url_for(\'static\', filename=\'js/app.js\') }}"></script>
+<script>
+injectComponents('');
+
+function pageInit() {
+  renderWishlist();
+  renderRecentlyViewed();
+}
+
+function renderWishlist() {
+  const main = document.getElementById('wish-main');
+  if (!wishlist.length) {
+    main.innerHTML = `
+      <div class="wish-empty">
+        <div class="wish-empty-icon">🤍</div>
+        <div class="wish-empty-title">Your Wishlist<br>Is Empty</div>
+        <p class="wish-empty-sub">Browse our collection and tap the heart icon on any product to save it here.</p>
+        <a href="/shop" class="btn btn-black">Start Browsing</a>
+      </div>`;
+    // Show suggestions
+    document.getElementById('suggestions-section').style.display = 'block';
+    const top4 = [...PRODUCTS].sort((a,b) => b.rating - a.rating).slice(0,4);
+    document.getElementById('suggestions-grid').innerHTML = top4.map(productCardHTML).join('');
+    setTimeout(setupReveal, 100);
+    updateWishBtns();
+    return;
+  }
+
+  document.getElementById('share-panel').style.display = 'block';
+  main.innerHTML = `
+    <div class="wish-header">
+      <div>
+        <div class="wish-title">My Wishlist</div>
+        <div class="wish-count">${wishlist.length} saved item${wishlist.length!==1?'s':''}</div>
+      </div>
+      <div class="wish-actions">
+        <button class="btn btn-ghost-dark btn-sm" onclick="addAllToCart()">Add All to Cart</button>
+        <button class="btn btn-ghost-dark btn-sm" onclick="clearWishlist()">Clear All</button>
+      </div>
+    </div>
+    <div class="wish-grid">
+      ${wishlist.map(p => {
+        const badgeMap = { Bestseller:'badge-green', New:'badge-green', Trending:'badge-terra', Hot:'badge-terra', Sale:'badge-terra', Luxury:'badge-gold', Premium:'badge-gold', Designer:'badge-gold', Set:'badge-black' };
+        return `
+        <div class="wish-card reveal" id="wcard-${p.id}">
+          ${p.badge ? `<div class="wc-badge"><span class="badge ${badgeMap[p.badge]||'badge-black'}">${p.badge}</span></div>` : ''}
+          <div class="wc-img">
+            <div class="wc-img-inner">${p.icon}</div>
+            <button class="wc-remove" title="Remove from wishlist" onclick="removeFromWish(${p.id})">✕</button>
+          </div>
+          <div class="wc-info">
+            <div class="wc-cat">${p.category}</div>
+            <div class="wc-name" onclick="goProduct(${p.id})">${p.name}</div>
+            <div class="wc-rating">
+              <span style="color:var(--gold);font-size:12px">${'★'.repeat(Math.floor(p.rating))}</span>
+              <span style="font-size:11px;color:var(--mid)">(${p.reviews})</span>
+            </div>
+            <div class="wc-foot">
+              <div>
+                <span class="wc-price">₱${p.price.toLocaleString()}</span>
+                ${p.original?`<span class="wc-orig">₱${p.original.toLocaleString()}</span>`:''}
+              </div>
+              <button class="wc-atc" onclick="addToCart(${p.id}); openCartDrawer()">Add to Cart</button>
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  setTimeout(setupReveal, 100);
+}
+
+function removeFromWish(id) {
+  const card = document.getElementById('wcard-' + id);
+  if (card) { card.style.opacity = '0'; card.style.transform = 'scale(.95)'; card.style.transition = 'all .3s'; }
+  setTimeout(() => { toggleWishlist(id); renderWishlist(); }, 300);
+}
+
+function addAllToCart() {
+  wishlist.forEach(p => addToCart(p.id));
+  showToast(`<span class="toast-icon">🛒</span> ${wishlist.length} items added to cart!`, 'success');
+  openCartDrawer();
+}
+
+function clearWishlist() {
+  if (!confirm('Remove all items from your wishlist?')) return;
+  wishlist = []; localStorage.setItem('pothub_wish', '[]');
+  updateWishBadge();
+  renderWishlist();
+}
+
+function copyShareLink() {
+  const link = document.getElementById('share-link').value;
+  navigator.clipboard.writeText(link).then(() => showToast('<span class="toast-icon">🔗</span> Link copied to clipboard!', 'success'));
+}
+
+function renderRecentlyViewed() {
+  const rv = JSON.parse(localStorage.getItem('pothub_rv') || '[]');
+  if (!rv.length) return;
+  const products = rv.map(id => PRODUCTS.find(p => p.id === id)).filter(Boolean).slice(0,4);
+  if (!products.length) return;
+  document.getElementById('rv-section').style.display = 'block';
+  document.getElementById('rv-grid').innerHTML = products.map(productCardHTML).join('');
+  setTimeout(setupReveal, 100);
+  updateWishBtns();
+}
+</script>
+</body>
+</html>

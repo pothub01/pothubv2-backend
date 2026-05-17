@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — PotHub</title>
+<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/style.css\') }}">
+<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/responsive.css\') }}">
+<style>
+.contact-layout{display:grid;grid-template-columns:1fr 1fr;gap:80px;padding:80px 0}
+.contact-info-item{display:flex;gap:20px;margin-bottom:40px}
+.ci-icon{width:52px;height:52px;background:var(--gray);display:flex;align-items:center;justify-content:center;font-size:24px;border-radius:var(--r);flex-shrink:0}
+.ci-label{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--mid);margin-bottom:6px}
+.ci-val{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700}
+.ci-sub{font-size:13px;color:var(--mid);margin-top:4px}
+.contact-form-card{background:var(--gray);padding:52px;border-radius:var(--r)}
+.cf-title{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;text-transform:uppercase;letter-spacing:-1px;margin-bottom:8px}
+.cf-sub{font-size:14px;color:var(--mid);margin-bottom:36px;font-weight:300}
+.form-group{margin-bottom:18px}
+.form-label{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--mid);margin-bottom:8px;display:block}
+.form-input{width:100%;background:var(--white);border:1.5px solid var(--gray2);padding:14px 16px;font-size:14px;outline:none;border-radius:var(--r);transition:border-color .2s;font-family:'Barlow',sans-serif}
+.form-input:focus{border-color:var(--green)}
+.form-textarea{width:100%;background:var(--white);border:1.5px solid var(--gray2);padding:14px 16px;font-size:14px;outline:none;border-radius:var(--r);transition:border-color .2s;font-family:'Barlow',sans-serif;resize:vertical;min-height:140px}
+.form-textarea:focus{border-color:var(--green)}
+.form-select{width:100%;background:var(--white);border:1.5px solid var(--gray2);padding:14px 16px;font-size:14px;outline:none;border-radius:var(--r);cursor:pointer;font-family:'Barlow',sans-serif}
+.map-placeholder{background:var(--black);height:400px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;color:rgba(255,255,255,.4)}
+.map-icon{font-size:64px;opacity:.3}
+@media(max-width:960px){.contact-layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="page-hero">
+  <div class="container">
+    <div class="breadcrumb"><a href="/index">Home</a><span>/</span><span style="color:rgba(255,255,255,.6)">Contact</span></div>
+    <h1 class="display display-lg page-hero-title">GET IN<br>TOUCH</h1>
+    <p class="page-hero-sub">We're here to help. Whether it's a question, a custom order, or just to say hi — we'd love to hear from you.</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="contact-layout">
+    <!-- INFO -->
+    <div class="reveal">
+      <div class="eyebrow" style="margin-bottom:32px">Reach Us</div>
+      <div class="contact-info-item">
+        <div class="ci-icon">📍</div>
+        <div>
+          <div class="ci-label">Visit Us</div>
+          <div class="ci-val">PotHub Studio</div>
+          <div class="ci-sub">123 Legazpi Street, Makati City<br>Metro Manila, Philippines 1229</div>
+        </div>
+      </div>
+      <div class="contact-info-item">
+        <div class="ci-icon">📞</div>
+        <div>
+          <div class="ci-label">Call Us</div>
+          <div class="ci-val">+63 2 8888 POTS</div>
+          <div class="ci-sub">Mon–Sat, 9AM–6PM PST</div>
+        </div>
+      </div>
+      <div class="contact-info-item">
+        <div class="ci-icon">✉️</div>
+        <div>
+          <div class="ci-label">Email</div>
+          <div class="ci-val">hello@pothub.ph</div>
+          <div class="ci-sub">We reply within 24 hours</div>
+        </div>
+      </div>
+      <div class="contact-info-item">
+        <div class="ci-icon">📱</div>
+        <div>
+          <div class="ci-label">Social</div>
+          <div class="ci-val">@pothubph</div>
+          <div class="ci-sub">Instagram · Facebook · TikTok · Pinterest</div>
+        </div>
+      </div>
+      <div style="margin-top:48px;padding:32px;background:var(--beige);border-radius:var(--r)">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;text-transform:uppercase;margin-bottom:12px">Store Hours</div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:14px;color:var(--mid)">
+          <div style="display:flex;justify-content:space-between"><span>Monday – Friday</span><span style="color:var(--black);font-weight:500">9:00 AM – 7:00 PM</span></div>
+          <div style="display:flex;justify-content:space-between"><span>Saturday</span><span style="color:var(--black);font-weight:500">10:00 AM – 6:00 PM</span></div>
+          <div style="display:flex;justify-content:space-between"><span>Sunday</span><span style="color:var(--terra);font-weight:500">Closed</span></div>
+        </div>
+      </div>
+    </div>
+    <!-- FORM -->
+    <div class="reveal">
+      <div class="contact-form-card">
+        <div class="cf-title">Send a Message</div>
+        <p class="cf-sub">Fill out the form and we'll get back to you within 24 hours.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="form-group"><label class="form-label">First Name</label><input class="form-input" type="text" placeholder="Juan"></div>
+          <div class="form-group"><label class="form-label">Last Name</label><input class="form-input" type="text" placeholder="Dela Cruz"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="juan@email.com"></div>
+        <div class="form-group"><label class="form-label">Topic</label>
+          <select class="form-select">
+            <option>General Inquiry</option>
+            <option>Order Support</option>
+            <option>Custom / Bulk Order</option>
+            <option>Returns & Exchanges</option>
+            <option>Plant Care Advice</option>
+            <option>Partnership</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Message</label><textarea class="form-textarea" placeholder="Tell us how we can help..."></textarea></div>
+        <button class="btn btn-black btn-full" onclick="submitContact()">Send Message →</button>
+        <div id="contact-success" style="display:none;text-align:center;margin-top:16px;color:var(--green);font-size:14px">✓ Message sent! We'll reply within 24 hours.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAP -->
+<div class="map-placeholder">
+  <div class="map-icon">🗺️</div>
+  <div style="font-size:14px;letter-spacing:2px;text-transform:uppercase">PotHub Studio — Makati City, Philippines</div>
+  <div style="font-size:12px">123 Legazpi Street, Makati · Open Mon–Sat</div>
+</div>
+
+<!-- FAQ SHORTCUT -->
+<section class="section-sm">
+  <div class="container" style="text-align:center">
+    <div class="eyebrow" style="margin-bottom:12px">Quick Help</div>
+    <h3 class="display display-sm" style="margin-bottom:20px">LOOKING FOR ANSWERS?</h3>
+    <p style="color:var(--mid);font-weight:300;margin-bottom:32px">Check our FAQ for quick answers to common questions.</p>
+    <a href="/faq" class="btn btn-black">View FAQ</a>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+<script src="{{ url_for(\'static\', filename=\'js/components.js\') }}"></script>
+<script src="{{ url_for(\'static\', filename=\'js/app.js\') }}"></script>
+<script>
+injectComponents('contact');
+function pageInit() { setupReveal(); }
+function submitContact() {
+  showToast('<span class="toast-icon">✅</span> Message sent! We\'ll reply within 24 hours.', 'success');
+  document.getElementById('contact-success').style.display = 'block';
+}
+</script>
+</body>
+</html>

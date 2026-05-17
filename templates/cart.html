@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cart — PotHub</title>
+<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/style.css\') }}">
+<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/responsive.css\') }}">
+<style>
+.cart-page{display:grid;grid-template-columns:1fr 380px;gap:48px;padding:60px 0;align-items:start}
+.cart-heading{font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:900;text-transform:uppercase;letter-spacing:-2px;margin-bottom:8px}
+.cart-sub{font-size:13px;color:var(--mid);letter-spacing:1px;margin-bottom:40px}
+.cart-table{width:100%}
+.cart-table-head{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 40px;gap:16px;padding:0 0 16px;border-bottom:2px solid var(--black);font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--mid)}
+.cart-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 40px;gap:16px;align-items:center;padding:24px 0;border-bottom:1px solid var(--gray2);animation:fadeSlide .3s ease}
+.cr-product{display:flex;align-items:center;gap:20px}
+.cr-thumb{width:88px;height:88px;background:var(--gray);display:flex;align-items:center;justify-content:center;font-size:44px;flex-shrink:0;border-radius:var(--r);cursor:pointer;transition:opacity .2s}
+.cr-thumb:hover{opacity:.8}
+.cr-details{}
+.cr-name{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;text-transform:uppercase;margin-bottom:4px;cursor:pointer}
+.cr-name:hover{text-decoration:underline}
+.cr-meta{font-size:11px;color:var(--mid);letter-spacing:1.5px;text-transform:uppercase}
+.cr-price{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700}
+.cr-qty{display:flex;align-items:center;gap:0;border:1.5px solid var(--gray2);border-radius:var(--r);overflow:hidden;width:fit-content}
+.cq-btn{background:var(--gray);border:none;width:34px;height:34px;font-size:18px;cursor:pointer;transition:background .2s;display:flex;align-items:center;justify-content:center}
+.cq-btn:hover{background:var(--gray2)}
+.cq-val{width:40px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;background:none;border:none;outline:none}
+.cr-total{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700}
+.cr-remove{background:none;border:none;font-size:18px;color:var(--mid);cursor:pointer;transition:color .2s;display:flex;align-items:center;justify-content:center}
+.cr-remove:hover{color:var(--terra)}
+.cart-empty{text-align:center;padding:100px 0}
+.cart-empty-icon{font-size:100px;opacity:.12;margin-bottom:28px}
+.cart-empty-title{font-family:'Barlow Condensed',sans-serif;font-size:48px;font-weight:900;text-transform:uppercase;letter-spacing:-1.5px;margin-bottom:16px}
+.cart-empty-sub{color:var(--mid);font-size:15px;font-weight:300;max-width:360px;margin:0 auto 40px}
+/* SUMMARY CARD */
+.summary-card{background:var(--gray);padding:40px;border-radius:var(--r);position:sticky;top:calc(var(--nav-h) + 24px)}
+.summary-title{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:-0.5px;margin-bottom:28px}
+.summary-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:14px}
+.summary-row .lbl{color:var(--mid);text-transform:uppercase;letter-spacing:1px;font-size:12px}
+.summary-divider{border:none;border-top:1px solid var(--gray2);margin:20px 0}
+.summary-total{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+.summary-total .lbl{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.summary-total .amt{font-family:'Barlow Condensed',sans-serif;font-size:38px;font-weight:900}
+.coupon-row{display:flex;gap:0;margin-bottom:24px}
+.coupon-input{flex:1;background:var(--white);border:1.5px solid var(--gray2);border-right:none;padding:12px 16px;font-size:13px;outline:none;text-transform:uppercase;letter-spacing:1px;font-family:'Barlow',sans-serif;border-radius:var(--r) 0 0 var(--r)}
+.coupon-input:focus{border-color:var(--green)}
+.coupon-btn{background:var(--black);color:var(--white);border:none;padding:12px 20px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:background .2s;border-radius:0 var(--r) var(--r) 0}
+.coupon-btn:hover{background:var(--green)}
+.summary-notes{font-size:12px;color:var(--mid);text-align:center;margin-top:12px;line-height:1.5}
+/* RECENTLY VIEWED */
+.rv-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:3px}
+@media(max-width:1100px){.cart-page{grid-template-columns:1fr}}
+@media(max-width:768px){
+  .cart-table-head{display:none}
+  .cart-row{grid-template-columns:1fr auto;grid-template-rows:auto auto auto;gap:12px}
+  .cr-product{grid-column:1/-1}
+  .cr-qty{grid-column:1}
+  .cr-total{grid-column:1}
+  .cr-remove{grid-row:2;grid-column:2}
+  .cr-price{display:none}
+  .rv-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div style="padding-top:var(--nav-h)">
+  <div class="container">
+    <div style="padding-top:48px">
+      <div class="breadcrumb" style="color:var(--mid)"><a href="/index" style="color:var(--green)">Home</a><span>/</span><span>Cart</span></div>
+    </div>
+    <div id="cart-main"></div>
+  </div>
+</div>
+
+<!-- RECENTLY VIEWED -->
+<section class="section" id="rv-section" style="display:none">
+  <div class="container">
+    <div style="margin-bottom:32px">
+      <div class="eyebrow" style="margin-bottom:8px">Recently Viewed</div>
+      <h3 class="display display-sm">YOU MAY ALSO LIKE</h3>
+    </div>
+    <div class="rv-grid" id="rv-grid"></div>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+<script src="{{ url_for(\'static\', filename=\'js/components.js\') }}"></script>
+<script src="{{ url_for(\'static\', filename=\'js/app.js\') }}"></script>
+<script>
+injectComponents('');
+
+let appliedDiscount = 0;
+const DISCOUNTS = { 'GROWFREE': 0.10, 'POTHUB20': 0.20, 'PLANT15': 0.15 };
+
+function pageInit() {
+  renderCartPage();
+  renderRecentlyViewed();
+}
+
+function renderCartPage() {
+  const main = document.getElementById('cart-main');
+  if (!cart.length) {
+    main.innerHTML = `
+      <div class="cart-empty">
+        <div class="cart-empty-icon">🪴</div>
+        <div class="cart-empty-title">Your Cart<br>Is Empty</div>
+        <p class="cart-empty-sub">Looks like you haven't added anything yet. Go find your perfect pot!</p>
+        <a href="/shop" class="btn btn-black">Start Shopping</a>
+      </div>`;
+    return;
+  }
+
+  const subtotal  = getCartTotal();
+  const discount  = Math.round(subtotal * appliedDiscount);
+  const shipping  = subtotal >= 1500 ? 0 : 150;
+  const total     = subtotal - discount + shipping;
+
+  main.innerHTML = `
+    <div class="cart-page">
+      <div>
+        <div class="cart-heading">Your Cart</div>
+        <div class="cart-sub">${getCartCount()} item${getCartCount()!==1?'s':''}</div>
+        <div class="cart-table">
+          <div class="cart-table-head">
+            <span>Product</span><span>Price</span><span>Quantity</span><span>Total</span><span></span>
+          </div>
+          <div id="cart-rows">
+            ${cart.map(item => `
+              <div class="cart-row" id="row-${item.key}">
+                <div class="cr-product">
+                  <div class="cr-thumb" onclick="window.location.href='product.html?id=${item.id}'">${item.icon}</div>
+                  <div class="cr-details">
+                    <div class="cr-name" onclick="window.location.href='product.html?id=${item.id}'">${item.name}</div>
+                    <div class="cr-meta">${[item.color, item.size].filter(Boolean).join(' · ') || item.category} · SKU: ${item.sku}</div>
+                  </div>
+                </div>
+                <div class="cr-price">₱${item.price.toLocaleString()}</div>
+                <div class="cr-qty">
+                  <button class="cq-btn" onclick="cartPageQty('${item.key}',-1)">−</button>
+                  <input class="cq-val" id="qty-${item.key}" value="${item.qty}" onchange="cartPageSetQty('${item.key}',this.value)">
+                  <button class="cq-btn" onclick="cartPageQty('${item.key}',1)">+</button>
+                </div>
+                <div class="cr-total" id="total-${item.key}">₱${(item.price*item.qty).toLocaleString()}</div>
+                <button class="cr-remove" title="Remove" onclick="cartPageRemove('${item.key}')">✕</button>
+              </div>`).join('')}
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:28px;padding-top:24px;border-top:1px solid var(--gray2)">
+          <a href="/shop" class="btn btn-ghost-dark btn-sm">← Continue Shopping</a>
+          <button class="btn btn-ghost-dark btn-sm" onclick="clearCart()">Clear Cart</button>
+        </div>
+      </div>
+      <!-- SUMMARY -->
+      <div>
+        <div class="summary-card">
+          <div class="summary-title">Order Summary</div>
+          <div class="summary-row"><span class="lbl">Subtotal</span><span>₱${subtotal.toLocaleString()}</span></div>
+          ${discount>0?`<div class="summary-row" style="color:var(--green)"><span class="lbl">Discount</span><span>−₱${discount.toLocaleString()}</span></div>`:''}
+          <div class="summary-row"><span class="lbl">Shipping</span><span>${shipping===0?'<span style="color:var(--green)">Free</span>':'₱'+shipping.toLocaleString()}</span></div>
+          ${shipping>0?`<div style="font-size:11px;color:var(--terra);margin-bottom:12px">Add ₱${(1500-subtotal).toLocaleString()} more for free shipping</div>`:''}
+          <hr class="summary-divider">
+          <div class="summary-total"><span class="lbl">Total</span><span class="amt">₱${total.toLocaleString()}</span></div>
+          <!-- COUPON -->
+          <div class="coupon-row">
+            <input class="coupon-input" id="coupon-input" type="text" placeholder="COUPON CODE">
+            <button class="coupon-btn" onclick="applyCoupon()">Apply</button>
+          </div>
+          <div id="coupon-msg" style="font-size:12px;margin-bottom:16px;height:16px"></div>
+          <a href="/checkout" class="btn btn-black btn-full" style="display:flex;margin-bottom:12px">Proceed to Checkout →</a>
+          <div class="summary-notes">🔒 Secure checkout · Free returns · COD available</div>
+          <hr class="summary-divider">
+          <div style="display:flex;justify-content:center;gap:16px;font-size:22px;opacity:.3">💳 🏧 📱 🏦</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function cartPageQty(key, delta) {
+  const item = cart.find(i => i.key === key);
+  if (!item) return;
+  item.qty = Math.max(1, item.qty + delta);
+  saveCart();
+  document.getElementById('qty-' + key).value = item.qty;
+  document.getElementById('total-' + key).textContent = '₱' + (item.price * item.qty).toLocaleString();
+  refreshSummary();
+}
+
+function cartPageSetQty(key, val) {
+  const item = cart.find(i => i.key === key);
+  if (!item) return;
+  item.qty = Math.max(1, parseInt(val) || 1);
+  saveCart();
+  document.getElementById('qty-' + key).value = item.qty;
+  document.getElementById('total-' + key).textContent = '₱' + (item.price * item.qty).toLocaleString();
+  refreshSummary();
+}
+
+function cartPageRemove(key) {
+  const row = document.getElementById('row-' + key);
+  if (row) { row.style.opacity = '0'; row.style.transform = 'translateX(20px)'; row.style.transition = 'all .3s'; setTimeout(() => { removeFromCart(key); renderCartPage(); }, 300); }
+  else { removeFromCart(key); renderCartPage(); }
+}
+
+function clearCart() {
+  if (!confirm('Clear all items from your cart?')) return;
+  cart = []; saveCart(); renderCartPage(); renderCartDrawer();
+}
+
+function refreshSummary() {
+  const subtotal = getCartTotal();
+  const discount = Math.round(subtotal * appliedDiscount);
+  const shipping = subtotal >= 1500 ? 0 : 150;
+  const total    = subtotal - discount + shipping;
+  // Re-render just summary numbers by re-rendering full page
+  renderCartPage();
+}
+
+function applyCoupon() {
+  const code = document.getElementById('coupon-input')?.value.trim().toUpperCase();
+  const msg  = document.getElementById('coupon-msg');
+  if (DISCOUNTS[code]) {
+    appliedDiscount = DISCOUNTS[code];
+    if (msg) { msg.style.color = 'var(--green)'; msg.textContent = `✓ ${Math.round(appliedDiscount*100)}% discount applied!`; }
+    showToast(`<span class="toast-icon">🎉</span> Coupon "${code}" applied — ${Math.round(appliedDiscount*100)}% off!`, 'success');
+    renderCartPage();
+  } else {
+    if (msg) { msg.style.color = 'var(--terra)'; msg.textContent = 'Invalid coupon code.'; }
+    showToast('<span class="toast-icon">❌</span> Invalid coupon code.', 'error');
+  }
+}
+
+function renderRecentlyViewed() {
+  const rv = JSON.parse(localStorage.getItem('pothub_rv') || '[]');
+  if (!rv.length) return;
+  const products = rv.map(id => PRODUCTS.find(p => p.id === id)).filter(Boolean).slice(0,4);
+  if (!products.length) return;
+  document.getElementById('rv-section').style.display = 'block';
+  document.getElementById('rv-grid').innerHTML = products.map(productCardHTML).join('');
+  setTimeout(setupReveal, 100);
+  updateWishBtns();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PotHub — Just Grow It | Premium Plant Pots & Planters Philippines</title>
+<meta name="description" content="Shop premium ceramic pots, terracotta planters, and indoor gardening accessories. PotHub — Philippines' most loved plant pot store.">
+<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/style.css\') }}">
+<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/responsive.css\') }}">
+<style>
+/* ── HOME SPECIFIC ── */
+.hero-num { position:absolute; right:48px; bottom:40px; z-index:2; font-family:'Barlow Condensed',sans-serif; font-size:120px; font-weight:900; color:rgba(255,255,255,.04); line-height:1; pointer-events:none; }
+.trending-row { display:flex; gap:12px; flex-wrap:wrap; margin-top:16px; }
+.trending-tag { background:var(--gray); border:1px solid var(--gray2); padding:8px 16px; font-size:11px; font-weight:600; letter-spacing:2px; text-transform:uppercase; border-radius:40px; cursor:pointer; transition:all .2s; }
+.trending-tag:hover { background:var(--black); color:var(--white); border-color:var(--black); }
+.insta-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:3px; }
+.insta-tile { aspect-ratio:1/1; background:var(--gray); display:flex; align-items:center; justify-content:center; font-size:64px; cursor:pointer; overflow:hidden; position:relative; }
+.insta-tile::after { content:'📸'; position:absolute; inset:0; background:rgba(0,0,0,.5); display:flex; align-items:center; justify-content:center; font-size:28px; opacity:0; transition:opacity .3s; }
+.insta-tile:hover::after { opacity:1; }
+.lifestyle-grid { display:grid; grid-template-columns:1.4fr 1fr; gap:3px; min-height:600px; }
+.ls-main { background:var(--black); display:flex; align-items:flex-end; padding:60px; position:relative; overflow:hidden; }
+.ls-main::before { content:'🪴'; font-size:320px; position:absolute; top:-40px; right:-20px; opacity:.06; }
+.ls-side { display:grid; grid-template-rows:1fr 1fr; gap:3px; }
+.ls-card { background:var(--beige); display:flex; flex-direction:column; justify-content:flex-end; padding:40px; position:relative; overflow:hidden; cursor:pointer; transition:background .3s; }
+.ls-card:hover { background:var(--gray); }
+.ls-card-icon { font-size:80px; position:absolute; top:20px; right:20px; opacity:.15; }
+.ls-card-label { font-size:10px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:var(--terra); margin-bottom:8px; }
+.ls-card-title { font-family:'Barlow Condensed',sans-serif; font-size:28px; font-weight:800; text-transform:uppercase; letter-spacing:-0.5px; margin-bottom:8px; }
+.ls-card-desc { font-size:13px; color:var(--mid); font-weight:300; }
+.promo-banner { background:var(--green); padding:60px 48px; display:grid; grid-template-columns:1fr auto; gap:40px; align-items:center; }
+.promo-code { background:rgba(255,255,255,.15); border:1px dashed rgba(255,255,255,.4); padding:12px 24px; font-family:'Barlow Condensed',sans-serif; font-size:24px; font-weight:700; letter-spacing:4px; color:var(--white); }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-deco">🪴</div>
+  <div class="hero-content" id="hero-content" style="opacity:0;transform:translateY(40px);transition:opacity .8s ease .3s,transform .8s ease .3s">
+    <div class="hero-tag">New Collection 2026 · Philippines</div>
+    <h1 class="hero-title">JUST<br><span class="g">GROW</span><br><span class="t">IT.</span></h1>
+    <p class="hero-sub">Premium pots, planters & ceramic vessels crafted for every plant parent. Where bold design meets earthy roots.</p>
+    <div class="hero-cta">
+      <a href="/shop" class="btn btn-white">Shop Now</a>
+      <a href="/collections" class="btn btn-ghost">Browse Collections</a>
+    </div>
+  </div>
+  <div class="hero-scroll">Scroll</div>
+  <div class="hero-num">01</div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee">
+  <div class="marquee-track">
+    <span class="marquee-item">NEW ARRIVALS<span class="marquee-dot"> • </span>CERAMIC POTS<span class="marquee-dot"> • </span>HANGING PLANTERS<span class="marquee-dot"> • </span>FREE SHIPPING PH<span class="marquee-dot"> • </span>TERRACOTTA COLLECTION<span class="marquee-dot"> • </span>JUST GROW IT<span class="marquee-dot"> • </span>HANDCRAFTED<span class="marquee-dot"> • </span>LUXURY CERAMICS<span class="marquee-dot"> • </span></span>
+    <span class="marquee-item">NEW ARRIVALS<span class="marquee-dot"> • </span>CERAMIC POTS<span class="marquee-dot"> • </span>HANGING PLANTERS<span class="marquee-dot"> • </span>FREE SHIPPING PH<span class="marquee-dot"> • </span>TERRACOTTA COLLECTION<span class="marquee-dot"> • </span>JUST GROW IT<span class="marquee-dot"> • </span>HANDCRAFTED<span class="marquee-dot"> • </span>LUXURY CERAMICS<span class="marquee-dot"> • </span></span>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat reveal"><div class="stat-num">500+</div><div class="stat-label">Pot Styles</div></div>
+  <div class="stat reveal"><div class="stat-num">10K+</div><div class="stat-label">Happy Plant Parents</div></div>
+  <div class="stat reveal"><div class="stat-num">100%</div><div class="stat-label">Handcrafted</div></div>
+  <div class="stat reveal"><div class="stat-num">PH</div><div class="stat-label">Proudly Filipino</div></div>
+</div>
+
+<!-- FEATURED PRODUCTS -->
+<section class="section" id="featured">
+  <div class="container">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:48px">
+      <div>
+        <div class="eyebrow section-label reveal">Latest Drops</div>
+        <h2 class="display display-md section-title reveal">FEATURED<br>POTS</h2>
+      </div>
+      <a href="/shop" class="btn btn-ghost-dark reveal">Shop All →</a>
+    </div>
+    <div class="products-grid" id="featured-grid">
+      <!-- skeletons -->
+      <div class="skeleton-card"><div class="skel skel-img"></div><div class="skel-body"><div class="skel skel-line w80"></div><div class="skel skel-line w60"></div></div></div>
+      <div class="skeleton-card"><div class="skel skel-img"></div><div class="skel-body"><div class="skel skel-line w80"></div><div class="skel skel-line w60"></div></div></div>
+      <div class="skeleton-card"><div class="skel skel-img"></div><div class="skel-body"><div class="skel skel-line w80"></div><div class="skel skel-line w60"></div></div></div>
+      <div class="skeleton-card"><div class="skel skel-img"></div><div class="skel-body"><div class="skel skel-line w80"></div><div class="skel skel-line w60"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="section" style="padding-top:0" id="collections-home">
+  <div class="container">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:48px">
+      <div>
+        <div class="eyebrow section-label reveal">Browse by Type</div>
+        <h2 class="display display-md section-title reveal">COLLECTIONS</h2>
+      </div>
+      <a href="/collections" class="btn btn-ghost-dark reveal">All Collections →</a>
+    </div>
+    <div class="cat-grid-home">
+      <div class="cat-card-home reveal" onclick="window.location.href='shop.html?cat=ceramic'">
+        <span class="cch-icon">🏺</span>
+        <div class="cch-title">Ceramic Pots</div>
+        <div class="cch-count">120+ styles</div>
+        <span class="cch-arrow">Shop Now →</span>
+      </div>
+      <div class="cat-card-home reveal" onclick="window.location.href='shop.html?cat=hanging'">
+        <span class="cch-icon">🪴</span>
+        <div class="cch-title">Hanging Planters</div>
+        <div class="cch-count">65+ styles</div>
+        <span class="cch-arrow">Shop Now →</span>
+      </div>
+      <div class="cat-card-home reveal" onclick="window.location.href='shop.html?cat=luxury'">
+        <span class="cch-icon">✨</span>
+        <div class="cch-title">Luxury Series</div>
+        <div class="cch-count">40+ styles</div>
+        <span class="cch-arrow">Shop Now →</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIFESTYLE / SPLIT -->
+<div class="lifestyle-grid">
+  <div class="ls-main">
+    <div style="position:relative;z-index:1">
+      <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gl);margin-bottom:16px">The PotHub Way</div>
+      <h2 class="display display-lg" style="color:var(--white);margin-bottom:20px">GROW<br>YOUR<br>WORLD.</h2>
+      <p style="font-size:15px;font-weight:300;color:rgba(255,255,255,.45);line-height:1.8;max-width:360px;margin-bottom:36px">Plants aren't just decoration — they're a way of life. Every pot we make is designed to let your green babies thrive.</p>
+      <a href="/about" class="btn btn-white">Our Story</a>
+    </div>
+  </div>
+  <div class="ls-side">
+    <div class="ls-card" onclick="window.location.href='shop.html?cat=terracotta'">
+      <div class="ls-card-icon">🏺</div>
+      <div class="ls-card-label">Bestseller</div>
+      <div class="ls-card-title">Terracotta Series</div>
+      <div class="ls-card-desc">Natural clay. Ancient craft. Modern home.</div>
+    </div>
+    <div class="ls-card" style="background:var(--black)" onclick="window.location.href='shop.html?cat=luxury'">
+      <div class="ls-card-icon" style="opacity:.08">✨</div>
+      <div class="ls-card-label" style="color:var(--gl)">New Drop</div>
+      <div class="ls-card-title" style="color:var(--white)">Luxury Collection</div>
+      <div class="ls-card-desc">Marble. Gold rim. Pure statement.</div>
+    </div>
+  </div>
+</div>
+
+<!-- BEST SELLERS -->
+<section class="section" style="background:var(--beige)" id="bestsellers">
+  <div class="container">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:48px">
+      <div>
+        <div class="eyebrow section-label reveal">Top Picks</div>
+        <h2 class="display display-md section-title reveal">BEST<br>SELLERS</h2>
+      </div>
+      <a href="/shop?tag=bestseller" class="btn btn-ghost-dark reveal">View All →</a>
+    </div>
+    <div class="products-grid" id="bestseller-grid"></div>
+  </div>
+</section>
+
+<!-- SPLIT PROMO BANNERS -->
+<div class="split">
+  <div class="split-panel split-dark">
+    <div class="sp-eye">Limited Edition</div>
+    <div class="sp-head">TERRACOTTA<br>SERIES 2026</div>
+    <div class="sp-desc">Handthrown terracotta that breathes with your plant. Each piece unique. Each piece alive.</div>
+    <a href="/shop?cat=terracotta" class="btn btn-white" style="z-index:1;position:relative">Shop Terracotta</a>
+  </div>
+  <div class="split-panel split-green">
+    <div class="sp-eye">Just Dropped</div>
+    <div class="sp-head">HANGING<br>GARDEN</div>
+    <div class="sp-desc">Elevate your space vertically. Macramé, ceramic, and woven — for every wall and ceiling.</div>
+    <a href="/shop?cat=hanging" class="btn btn-ghost" style="z-index:1;position:relative">Explore Drop</a>
+  </div>
+</div>
+
+<!-- PROMO BANNER -->
+<div class="promo-banner">
+  <div>
+    <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:12px">Limited Time Offer</div>
+    <h3 class="display display-sm" style="color:var(--white);margin-bottom:12px">FREE SHIPPING ON ORDERS OVER ₱1,500</h3>
+    <p style="font-size:14px;color:rgba(255,255,255,.65)">Use code below at checkout. Metro Manila & nationwide delivery available.</p>
+  </div>
+  <div style="text-align:center;flex-shrink:0">
+    <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:8px">Use Code</div>
+    <div class="promo-code" onclick="navigator.clipboard.writeText('GROWFREE'); showToast('<span class=\\'toast-icon\\'>✅</span> Code copied!','success')">GROWFREE</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:8px">Click to copy</div>
+  </div>
+</div>
+
+<!-- NEW ARRIVALS -->
+<section class="section" id="new-arrivals">
+  <div class="container">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:48px">
+      <div>
+        <div class="eyebrow section-label reveal">Just In</div>
+        <h2 class="display display-md section-title reveal">NEW<br>ARRIVALS</h2>
+      </div>
+      <a href="/shop?tag=new" class="btn btn-ghost-dark reveal">See All New →</a>
+    </div>
+    <div class="products-grid" id="new-grid"></div>
+    <div style="margin-top:16px">
+      <div class="eyebrow" style="margin-bottom:12px">Trending Searches</div>
+      <div class="trending-row">
+        <span class="trending-tag" onclick="window.location.href='shop.html?q=succulent'">Succulent Pot</span>
+        <span class="trending-tag" onclick="window.location.href='shop.html?q=hanging'">Hanging Basket</span>
+        <span class="trending-tag" onclick="window.location.href='shop.html?q=marble'">Marble Planter</span>
+        <span class="trending-tag" onclick="window.location.href='shop.html?q=terracotta'">Terracotta</span>
+        <span class="trending-tag" onclick="window.location.href='shop.html?q=concrete'">Concrete Pot</span>
+        <span class="trending-tag" onclick="window.location.href='shop.html?q=set'">Pot Set</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section testimonials">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:56px">
+      <div class="eyebrow reveal" style="margin-bottom:12px">What Plant Parents Say</div>
+      <h2 class="display display-md reveal">LOVED BY<br>THOUSANDS</h2>
+    </div>
+    <div class="testimonial-grid">
+      <div class="testimonial-card reveal">
+        <div class="tc-stars">★★★★★</div>
+        <p class="tc-text">"My Nordic Ceramic Pot arrived perfectly packed. The matte finish is exactly as shown. My monstera has never looked better!"</p>
+        <div class="tc-author">
+          <div class="tc-avatar">M</div>
+          <div><div class="tc-name">Maria Santos</div><div class="tc-loc">Quezon City, PH</div></div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal">
+        <div class="tc-stars">★★★★★</div>
+        <p class="tc-text">"Ordered 3 pots and all were delivered in 2 days. The terracotta quality is outstanding. Will definitely be ordering again!"</p>
+        <div class="tc-author">
+          <div class="tc-avatar">J</div>
+          <div><div class="tc-name">Juan Reyes</div><div class="tc-loc">Makati, PH</div></div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal">
+        <div class="tc-stars">★★★★★</div>
+        <p class="tc-text">"The Marble Luxe Planter is absolutely stunning. Photos don't do it justice. It's become the centerpiece of my living room."</p>
+        <div class="tc-author">
+          <div class="tc-avatar">A</div>
+          <div><div class="tc-name">Andrea Lim</div><div class="tc-loc">BGC, PH</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INSTAGRAM GRID -->
+<section class="section-sm">
+  <div class="container" style="margin-bottom:24px">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div class="eyebrow">Follow us @pothubph</div>
+      <a href="#" style="font-size:12px;letter-spacing:2px;text-transform:uppercase;text-decoration:underline;color:var(--mid)">View Instagram →</a>
+    </div>
+  </div>
+  <div class="insta-grid">
+    <div class="insta-tile">🏺</div>
+    <div class="insta-tile">🌿</div>
+    <div class="insta-tile">🪴</div>
+    <div class="insta-tile">✨</div>
+    <div class="insta-tile">🌱</div>
+    <div class="insta-tile">🏠</div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<div class="newsletter">
+  <div class="container">
+    <div class="eyebrow nl-eye reveal">Stay in the Loop</div>
+    <h2 class="display display-lg nl-title reveal">GROW YOUR<br><span>INBOX.</span></h2>
+    <p class="nl-sub reveal">New arrivals, care tips & exclusive deals. No spam — just good soil.</p>
+    <div class="nl-form">
+      <input class="nl-input" id="nl-email" type="email" placeholder="your@email.com">
+      <button class="nl-btn" onclick="nlSubmit()">Subscribe</button>
+    </div>
+    <div class="nl-success" id="nl-success">🌿 You're in! Welcome to the PotHub family.</div>
+  </div>
+</div>
+
+<div id="footer-placeholder"></div>
+
+<script src="{{ url_for(\'static\', filename=\'js/components.js\') }}"></script>
+<script src="{{ url_for(\'static\', filename=\'js/app.js\') }}"></script>
+<script>
+injectComponents('home');
+
+function pageInit() {
+  // Hero entrance
+  setTimeout(() => {
+    const hc = document.getElementById('hero-content');
+    if (hc) { hc.style.opacity = '1'; hc.style.transform = 'translateY(0)'; }
+  }, 300);
+
+  // Featured (first 4 products with badges)
+  const featured = PRODUCTS.filter(p => p.badge).slice(0,4);
+  document.getElementById('featured-grid').innerHTML = featured.map(productCardHTML).join('');
+
+  // Best sellers (by reviews count)
+  const bests = [...PRODUCTS].sort((a,b) => b.reviews - a.reviews).slice(0,4);
+  document.getElementById('bestseller-grid').innerHTML = bests.map(productCardHTML).join('');
+
+  // New arrivals (tagged new)
+  const news = PRODUCTS.filter(p => p.tags.includes('new')).slice(0,4);
+  document.getElementById('new-grid').innerHTML = news.map(productCardHTML).join('');
+
+  setupReveal();
+  updateWishBtns();
+}
+</script>
+</body>
+</html>

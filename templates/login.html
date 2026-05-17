@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — PotHub</title>
+<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/style.css\') }}">
+<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/responsive.css\') }}">
+<style>
+.auth-page{min-height:100vh;display:grid;grid-template-columns:1fr 1fr}
+.auth-left{background:var(--black);display:flex;flex-direction:column;justify-content:center;padding:80px;position:relative;overflow:hidden}
+.auth-left::before{content:'🪴';font-size:400px;position:absolute;right:-60px;bottom:-60px;opacity:.04;line-height:1}
+.auth-right{display:flex;flex-direction:column;justify-content:center;padding:80px;background:var(--white)}
+.auth-logo{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;letter-spacing:4px;text-transform:uppercase;color:var(--white);margin-bottom:64px;display:block}
+.auth-logo span{color:var(--gl)}
+.auth-tagline{font-family:'Barlow Condensed',sans-serif;font-size:clamp(48px,6vw,88px);font-weight:900;text-transform:uppercase;color:var(--white);line-height:.88;letter-spacing:-2px;margin-bottom:28px}
+.auth-tagline span{color:var(--gl)}
+.auth-sub{font-size:15px;font-weight:300;color:rgba(255,255,255,.45);line-height:1.7;max-width:360px;margin-bottom:48px}
+.auth-benefits{display:flex;flex-direction:column;gap:16px}
+.auth-benefit{display:flex;align-items:center;gap:12px;color:rgba(255,255,255,.6);font-size:13px}
+.ab-dot{width:8px;height:8px;background:var(--gl);border-radius:50%;flex-shrink:0}
+.form-card{max-width:440px;width:100%}
+.form-title{font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:900;text-transform:uppercase;letter-spacing:-1px;margin-bottom:8px}
+.form-subtitle{font-size:14px;color:var(--mid);font-weight:300;margin-bottom:36px}
+.form-group{margin-bottom:18px}
+.form-label{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--mid);margin-bottom:8px;display:block}
+.form-input{width:100%;background:var(--gray);border:1.5px solid var(--gray2);padding:14px 16px;font-size:14px;outline:none;border-radius:var(--r);transition:border-color .2s;font-family:'Barlow',sans-serif;color:var(--black)}
+.form-input:focus{border-color:var(--green);background:var(--white)}
+.form-input.error{border-color:var(--terra)}
+.pwd-wrap{position:relative}
+.pwd-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--mid)}
+.forgot-link{font-size:12px;color:var(--mid);text-decoration:underline;cursor:pointer;float:right;margin-top:6px;transition:color .2s}
+.forgot-link:hover{color:var(--green)}
+.divider{display:flex;align-items:center;gap:12px;margin:24px 0;color:var(--mid);font-size:11px;letter-spacing:1.5px;text-transform:uppercase}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--gray2)}
+.social-auth{display:flex;flex-direction:column;gap:10px}
+.social-btn-auth{width:100%;background:none;border:1.5px solid var(--gray2);padding:12px 20px;font-size:14px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;border-radius:var(--r);transition:border-color .2s,background .2s;font-family:'Barlow',sans-serif}
+.social-btn-auth:hover{border-color:var(--mid);background:var(--gray)}
+.auth-switch{text-align:center;margin-top:28px;font-size:13px;color:var(--mid)}
+.auth-switch a{color:var(--green);font-weight:600;text-decoration:underline}
+@media(max-width:960px){.auth-page{grid-template-columns:1fr}.auth-left{display:none}.auth-right{padding:80px 32px 48px}}
+@media(max-width:480px){.auth-right{padding:80px 20px 40px}}
+</style>
+</head>
+<body>
+<div id="toast-container"></div>
+
+<div class="auth-page">
+  <!-- LEFT -->
+  <div class="auth-left">
+    <a href="/index" class="auth-logo">POT<span>HUB</span></a>
+    <div class="auth-tagline">GROW<br><span>YOUR</span><br>WORLD.</div>
+    <p class="auth-sub">Join thousands of Filipino plant parents who shop smarter, track orders, and save their favourites — all in one place.</p>
+    <div class="auth-benefits">
+      <div class="auth-benefit"><div class="ab-dot"></div>Track all your orders in one dashboard</div>
+      <div class="auth-benefit"><div class="ab-dot"></div>Save items to your personal wishlist</div>
+      <div class="auth-benefit"><div class="ab-dot"></div>Get early access to new drops</div>
+      <div class="auth-benefit"><div class="ab-dot"></div>Earn PotHub Rewards on every purchase</div>
+    </div>
+  </div>
+  <!-- RIGHT -->
+  <div class="auth-right">
+    <div class="form-card" style="margin:0 auto">
+      <div class="form-title">Welcome Back</div>
+      <p class="form-subtitle">Log in to your PotHub account to continue shopping.</p>
+
+      <div class="social-auth">
+        <button class="social-btn-auth" onclick="socialLogin('Google')">
+          <span>🔵</span> Continue with Google
+        </button>
+        <button class="social-btn-auth" onclick="socialLogin('Facebook')">
+          <span>📘</span> Continue with Facebook
+        </button>
+      </div>
+
+      <div class="divider">or log in with email</div>
+
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input class="form-input" id="login-email" type="email" placeholder="juan@email.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="pwd-wrap">
+          <input class="form-input" id="login-pwd" type="password" placeholder="Your password" autocomplete="current-password">
+          <button class="pwd-toggle" onclick="togglePwd('login-pwd',this)">👁</button>
+        </div>
+        <a class="forgot-link" onclick="forgotPassword()">Forgot password?</a>
+      </div>
+
+      <div style="margin-bottom:24px">
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer">
+          <input type="checkbox" id="remember" style="accent-color:var(--green);width:16px;height:16px"> Remember me for 30 days
+        </label>
+      </div>
+
+      <button class="btn btn-black btn-full" onclick="handleLogin()" style="font-size:15px;padding:18px">
+        Log In →
+      </button>
+
+      <div class="auth-switch">
+        Don't have an account? <a href="/register">Sign up free</a>
+      </div>
+      <div class="auth-switch" style="margin-top:12px">
+        <a href="/index" style="color:var(--mid);font-size:12px;text-decoration:underline">← Continue as guest</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for(\'static\', filename=\'js/app.js\') }}"></script>
+<script>
+function handleLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pwd   = document.getElementById('login-pwd').value;
+  document.getElementById('login-email').classList.remove('error');
+  document.getElementById('login-pwd').classList.remove('error');
+  let valid = true;
+  if (!email || !email.includes('@')) { document.getElementById('login-email').classList.add('error'); valid = false; }
+  if (!pwd || pwd.length < 6)         { document.getElementById('login-pwd').classList.add('error'); valid = false; }
+  if (!valid) { showToast('<span class="toast-icon">⚠️</span> Please check your credentials.', 'error'); return; }
+  // Simulate login
+  localStorage.setItem('pothub_user', JSON.stringify({ email, name: email.split('@')[0] }));
+  showToast('<span class="toast-icon">🌿</span> Welcome back! Redirecting...', 'success');
+  setTimeout(() => window.location.href = 'index.html', 1500);
+}
+
+function socialLogin(provider) {
+  showToast(`<span class="toast-icon">🔄</span> Connecting to ${provider}...`);
+  setTimeout(() => {
+    localStorage.setItem('pothub_user', JSON.stringify({ email: 'user@pothub.ph', name: 'Plant Parent' }));
+    showToast('<span class="toast-icon">🌿</span> Logged in! Redirecting...', 'success');
+    setTimeout(() => window.location.href = 'index.html', 1200);
+  }, 1500);
+}
+
+function togglePwd(id, btn) {
+  const input = document.getElementById(id);
+  input.type = input.type === 'password' ? 'text' : 'password';
+  btn.textContent = input.type === 'password' ? '👁' : '🙈';
+}
+
+function forgotPassword() {
+  const email = document.getElementById('login-email').value.trim();
+  if (!email) { showToast('<span class="toast-icon">⚠️</span> Enter your email first, then click Forgot password.', 'error'); return; }
+  showToast('<span class="toast-icon">📧</span> Password reset link sent to ' + email, 'success');
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Collections — PotHub</title>
+<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/style.css\') }}">
+<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/responsive.css\') }}">
+<style>
+.collections-hero-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:3px;min-height:70vh}
+.col-hero-main{background:var(--black);display:flex;flex-direction:column;justify-content:flex-end;padding:80px;position:relative;overflow:hidden;cursor:pointer}
+.col-hero-main::before{content:'🏺';font-size:360px;position:absolute;top:-40px;right:-40px;opacity:.04;line-height:1;transition:opacity .4s}
+.col-hero-main:hover::before{opacity:.08}
+.col-hero-side{display:grid;grid-template-rows:1fr 1fr;gap:3px}
+.col-hero-card{display:flex;flex-direction:column;justify-content:flex-end;padding:48px;position:relative;overflow:hidden;cursor:pointer;transition:filter .3s}
+.col-hero-card:hover{filter:brightness(.9)}
+.col-hero-card::before{font-size:180px;position:absolute;top:-10px;right:-10px;opacity:.08;line-height:1}
+.col-hero-card.c1{background:#1a2e1f}.col-hero-card.c1::before{content:'🌿'}
+.col-hero-card.c2{background:#2e1a0e}.col-hero-card.c2::before{content:'🪴'}
+.ch-eye{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px}
+.col-hero-main .ch-eye{color:var(--gl)}
+.col-hero-card .ch-eye{color:rgba(255,255,255,.5)}
+.ch-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;line-height:.9;color:var(--white);letter-spacing:-1px;margin-bottom:14px}
+.col-hero-main .ch-title{font-size:clamp(40px,5vw,72px)}
+.col-hero-card .ch-title{font-size:clamp(28px,3.5vw,48px)}
+.ch-desc{font-size:14px;font-weight:300;line-height:1.7;color:rgba(255,255,255,.45);max-width:340px;margin-bottom:28px}
+.col-hero-card .ch-desc{font-size:13px;max-width:none}
+.collections-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;padding:80px 0}
+.col-card{background:var(--gray);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:transform .3s,box-shadow .3s}
+.col-card:hover{transform:translateY(-6px);box-shadow:0 20px 48px rgba(0,0,0,.1)}
+.col-card:hover .col-card-img-inner{transform:scale(1.08)}
+.col-card-img{aspect-ratio:4/3;background:var(--gray2);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.col-card-img-inner{font-size:100px;transition:transform .5s ease}
+.col-card-body{padding:28px}
+.col-card-name{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800;text-transform:uppercase;letter-spacing:-0.5px;margin-bottom:8px}
+.col-card-desc{font-size:13px;color:var(--mid);line-height:1.6;margin-bottom:16px;font-weight:300}
+.col-card-foot{display:flex;align-items:center;justify-content:space-between}
+.col-card-count{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--mid)}
+.col-card-arrow{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--green);transition:transform .2s}
+.col-card:hover .col-card-arrow{transform:translateX(4px)}
+.featured-col-banner{background:var(--beige);padding:100px 0}
+.fcb-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.fcb-img{aspect-ratio:1/1;background:var(--gray);display:flex;align-items:center;justify-content:center;font-size:200px;border-radius:var(--r)}
+.new-badge{background:var(--green);color:var(--white);font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;padding:6px 16px;display:inline-block;margin-bottom:20px}
+@media(max-width:960px){
+  .collections-hero-grid{grid-template-columns:1fr}
+  .col-hero-side{grid-template-columns:1fr 1fr;grid-template-rows:auto}
+  .collections-grid{grid-template-columns:1fr 1fr}
+  .fcb-inner{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .collections-grid{grid-template-columns:1fr}
+  .col-hero-side{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<!-- HERO GRID -->
+<div style="margin-top:var(--nav-h)">
+  <div class="collections-hero-grid">
+    <div class="col-hero-main" onclick="window.location.href='shop.html?cat=ceramic'">
+      <div style="position:relative;z-index:1">
+        <div class="ch-eye">Signature Collection</div>
+        <div class="ch-title">NORDIC<br>CERAMIC<br>SERIES</div>
+        <p class="ch-desc">Scandinavian-inspired ceramic pots handcrafted with matte glazes and clean silhouettes. Made for the modern home.</p>
+        <a class="btn btn-white" href="/shop?cat=ceramic">Explore Collection</a>
+      </div>
+    </div>
+    <div class="col-hero-side">
+      <div class="col-hero-card c1" onclick="window.location.href='shop.html?cat=hanging'">
+        <div style="position:relative;z-index:1">
+          <div class="ch-eye">Elevated Living</div>
+          <div class="ch-title">HANGING<br>GARDEN</div>
+          <p class="ch-desc">Woven macramé and ceramic hanging planters.</p>
+          <a class="btn btn-ghost btn-sm" href="/shop?cat=hanging" style="margin-top:4px">Shop Now</a>
+        </div>
+      </div>
+      <div class="col-hero-card c2" onclick="window.location.href='shop.html?cat=terracotta'">
+        <div style="position:relative;z-index:1">
+          <div class="ch-eye">Earth & Fire</div>
+          <div class="ch-title">TERRACOTTA<br>STUDIO</div>
+          <p class="ch-desc">Sun-baked clay. Ancient craft. Modern form.</p>
+          <a class="btn btn-ghost btn-sm" href="/shop?cat=terracotta" style="margin-top:4px">Shop Now</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ALL COLLECTIONS -->
+<section class="section">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:56px">
+      <div class="eyebrow reveal" style="margin-bottom:12px">Browse All</div>
+      <h2 class="display display-md reveal">OUR COLLECTIONS</h2>
+    </div>
+    <div class="collections-grid" id="collections-grid">
+      <!-- rendered by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED COLLECTION BANNER -->
+<div class="featured-col-banner">
+  <div class="container">
+    <div class="fcb-inner">
+      <div class="fcb-img reveal">✨</div>
+      <div class="reveal">
+        <div class="new-badge">New Season</div>
+        <h2 class="display display-md" style="margin-bottom:20px">LUXURY<br>CERAMIC<br>COLLECTION</h2>
+        <p style="font-size:15px;font-weight:300;line-height:1.8;color:var(--mid);max-width:400px;margin-bottom:36px">Our finest pieces — porcelain with gold rims, marble planters, and award-winning arch vases. For homes that demand the extraordinary.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <a href="/shop?cat=luxury" class="btn btn-black">Shop Luxury</a>
+          <a href="/product?id=7" class="btn btn-ghost-dark">View Bestseller</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONCRETE + ECO SPLIT -->
+<div class="split">
+  <div class="split-panel split-dark">
+    <div class="sp-eye">Urban Aesthetic</div>
+    <div class="sp-head">CONCRETE<br>STUDIO</div>
+    <div class="sp-desc">Raw industrial textures meet refined minimalism. Heavyweight pots built for the urban jungle.</div>
+    <a href="/shop?cat=concrete" class="btn btn-white" style="z-index:1;position:relative;width:fit-content">Shop Concrete</a>
+  </div>
+  <div class="split-panel split-beige">
+    <div class="sp-eye">Sustainability First</div>
+    <div class="sp-head">ECO<br>SERIES</div>
+    <div class="sp-desc">Biodegradable bamboo fiber pots and sustainably sourced materials. Good for your plants and the planet.</div>
+    <a href="/shop?cat=eco" class="btn btn-black" style="z-index:1;position:relative;width:fit-content">Shop Eco</a>
+  </div>
+</div>
+
+<!-- NEWSLETTER -->
+<div class="newsletter" style="padding:64px 0">
+  <div class="container" style="text-align:center">
+    <h3 class="display display-sm" style="color:var(--white);margin-bottom:16px">NEW COLLECTIONS EVERY SEASON</h3>
+    <p style="color:rgba(255,255,255,.4);margin-bottom:32px;font-weight:300">Subscribe to get early access to new drops.</p>
+    <div class="nl-form" style="margin:0 auto">
+      <input class="nl-input" id="nl-email" type="email" placeholder="your@email.com">
+      <button class="nl-btn" onclick="nlSubmit()">Subscribe</button>
+    </div>
+  </div>
+</div>
+
+<div id="footer-placeholder"></div>
+<script src="{{ url_for(\'static\', filename=\'js/components.js\') }}"></script>
+<script src="{{ url_for(\'static\', filename=\'js/app.js\') }}"></script>
+<script>
+injectComponents('collections');
+
+const COLLECTIONS = [
+  { name:'Indoor Pots',        cat:'ceramic',   icon:'🏺', count:42, desc:'Classic and contemporary ceramic pots for every indoor plant.',     color:'#f4f4f0' },
+  { name:'Outdoor Planters',   cat:'concrete',  icon:'🪨', count:28, desc:'Weatherproof planters built for terraces, balconies and gardens.',  color:'#e8e4dc' },
+  { name:'Hanging Collection', cat:'hanging',   icon:'🌿', count:19, desc:'Macramé, rope, and ceramic hanging planters for vertical gardens.',  color:'#e8f0e8' },
+  { name:'Scandinavian Series',cat:'ceramic',   icon:'⬜', count:35, desc:'Nordic minimalism — clean lines, matte glazes, pure form.',          color:'#f0f0f0' },
+  { name:'Luxury Ceramic',     cat:'luxury',    icon:'✨', count:16, desc:'Porcelain, marble, and gold-rim statement pots for premium homes.',  color:'#f5f0e0' },
+  { name:'Urban Jungle',       cat:'concrete',  icon:'🧱', count:22, desc:'Raw concrete and stone textures for the industrial-chic home.',      color:'#e4e4e0' },
+  { name:'Terracotta Studio',  cat:'terracotta',icon:'🏺', count:31, desc:'Handthrown sun-baked terracotta — earthy, breathable, beautiful.',   color:'#f5e8dc' },
+  { name:'Minimalist Edit',    cat:'ceramic',   icon:'🫙', count:24, desc:'Less is more. Simple forms, neutral tones, maximum impact.',         color:'#f4f4f0' },
+  { name:'Eco Bamboo',         cat:'eco',       icon:'🎋', count:12, desc:'Sustainable biodegradable pots — kind to plants and the planet.',    color:'#e8f0e4' },
+];
+
+function pageInit() {
+  const grid = document.getElementById('collections-grid');
+  grid.innerHTML = COLLECTIONS.map(c => `
+    <div class="col-card reveal" onclick="window.location.href='shop.html?cat=${c.cat}'" style="background:${c.color}">
+      <div class="col-card-img"><div class="col-card-img-inner">${c.icon}</div></div>
+      <div class="col-card-body">
+        <div class="col-card-name">${c.name}</div>
+        <p class="col-card-desc">${c.desc}</p>
+        <div class="col-card-foot">
+          <span class="col-card-count">${c.count} Products</span>
+          <span class="col-card-arrow">Shop Now →</span>
+        </div>
+      </div>
+    </div>`).join('');
+  setupReveal();
+}
+</script>
+</body>
+</html>
