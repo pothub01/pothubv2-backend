@@ -53,8 +53,14 @@ function getNavHTML(active = '') {
     <a href="blog.html" class="mm-link" onclick="closeMobile()">Blog</a>
     <a href="contact.html" class="mm-link" onclick="closeMobile()">Contact</a>
     <div class="mm-footer">
-      <a href="login.html" class="btn btn-ghost-dark btn-sm">Login</a>
-      <a href="register.html" class="btn btn-green btn-sm">Sign Up</a>
+      <div id="mobile-auth">
+        <a href="/login" class="btn btn-ghost-dark btn-sm">Login</a>
+        <a href="/register" class="btn btn-green btn-sm">Sign Up</a>
+      </div>
+      <div id="mobile-user" style="display:none;align-items:center;gap:10px">
+        <span id="mobile-user-name" style="font-size:13px;font-weight:600"></span>
+        <a href="/" onclick="logout();return false;" class="btn btn-ghost-dark btn-sm" style="font-size:12px">Logout</a>
+      </div>
     </div>
   </div>
 
@@ -73,7 +79,7 @@ function getNavHTML(active = '') {
       <div class="nav-actions">
         <button class="nav-btn" onclick="openSearch()">🔍 Search</button>
         <a href="wishlist.html" class="nav-btn">🤍 <span class="wish-count">0</span></a>
-        <a href="login.html" class="nav-btn">👤 Account</a>
+        <a href="/login" class="nav-btn" id="nav-account-btn">👤 Account</a>
         <button class="nav-btn nav-cart-btn" onclick="openCartDrawer()">🌿 Cart <span class="cart-count">0</span></button>
         <button class="nav-mobile-btn" id="mobile-toggle" onclick="toggleMobile()">☰</button>
       </div>
@@ -143,3 +149,36 @@ function injectComponents(active = '') {
   if (navPlaceholder) navPlaceholder.outerHTML = getNavHTML(active);
   if (footerPlaceholder) footerPlaceholder.outerHTML = getFooterHTML();
 }
+
+// ── User Session Management ──
+function checkUserSession() {
+  const user = JSON.parse(localStorage.getItem('pothub_user') || 'null');
+  const authButtons = document.getElementById('auth-buttons');
+  const userMenu = document.getElementById('user-menu');
+  const userName = document.getElementById('user-name');
+  const mobileAuth = document.getElementById('mobile-auth');
+  const mobileUser = document.getElementById('mobile-user');
+  const mobileUserName = document.getElementById('mobile-user-name');
+
+  if (user && user.name) {
+    if (authButtons) authButtons.style.display = 'none';
+    if (userMenu) { userMenu.style.display = 'flex'; userName.textContent = '👤 ' + user.name; }
+    if (mobileAuth) mobileAuth.style.display = 'none';
+    if (mobileUser) { mobileUser.style.display = 'flex'; mobileUserName.textContent = '👤 ' + user.name; }
+  } else {
+    if (authButtons) authButtons.style.display = 'flex';
+    if (userMenu) userMenu.style.display = 'none';
+    if (mobileAuth) mobileAuth.style.display = 'flex';
+    if (mobileUser) mobileUser.style.display = 'none';
+  }
+}
+
+function logout() {
+  localStorage.removeItem('pothub_user');
+  localStorage.removeItem('pothub_token');
+  showToast('<span class="toast-icon">👋</span> Logged out successfully', 'success');
+  setTimeout(() => window.location.reload(), 1000);
+}
+
+// Check session on page load
+document.addEventListener('DOMContentLoaded', checkUserSession);

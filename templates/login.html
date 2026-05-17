@@ -48,7 +48,7 @@
 <div class="auth-page">
   <!-- LEFT -->
   <div class="auth-left">
-    <a href="/index" class="auth-logo">POT<span>HUB</span></a>
+    <a href="/" class="auth-logo">POT<span>HUB</span></a>
     <div class="auth-tagline">GROW<br><span>YOUR</span><br>WORLD.</div>
     <p class="auth-sub">Join thousands of Filipino plant parents who shop smarter, track orders, and save their favourites — all in one place.</p>
     <div class="auth-benefits">
@@ -102,7 +102,7 @@
         Don't have an account? <a href="/register">Sign up free</a>
       </div>
       <div class="auth-switch" style="margin-top:12px">
-        <a href="/index" style="color:var(--mid);font-size:12px;text-decoration:underline">← Continue as guest</a>
+        <a href="#" onclick="continueAsGuest();return false;" style="color:var(--mid);font-size:12px;text-decoration:underline">← Continue as guest</a>
       </div>
     </div>
   </div>
@@ -136,17 +136,26 @@ async function handleLogin() {
     showToast('<span class="toast-icon">🌿</span> Welcome back! Redirecting...', 'success');
     setTimeout(() => window.location.href = '/', 1500);
   } catch (e) {
+    console.error('Login error:', e);
     showToast('<span class="toast-icon">⚠️</span> Network error. Try again.', 'error');
   }
 }
 
 function socialLogin(provider) {
-  showToast(`<span class="toast-icon">🔄</span> Connecting to ${provider}...`);
+  showToast('<span class="toast-icon">🔄</span> ' + provider + ' login coming soon...', 'info');
+  // Social login requires OAuth setup with Google/Facebook
+  // For now, show message and redirect to register
   setTimeout(() => {
-    localStorage.setItem('pothub_user', JSON.stringify({ email: 'user@pothub.ph', name: 'Plant Parent' }));
-    showToast('<span class="toast-icon">🌿</span> Logged in! Redirecting...', 'success');
-    setTimeout(() => window.location.href = 'index.html', 1200);
-  }, 1500);
+    window.location.href = '/register';
+  }, 2000);
+}
+
+function continueAsGuest() {
+  // Guest mode - no backend user, just clear any existing session
+  localStorage.removeItem('pothub_user');
+  localStorage.removeItem('pothub_token');
+  showToast('<span class="toast-icon">👋</span> Continuing as guest...', 'success');
+  setTimeout(() => window.location.href = '/', 1000);
 }
 
 function togglePwd(id, btn) {

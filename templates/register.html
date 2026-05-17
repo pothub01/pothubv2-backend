@@ -114,7 +114,7 @@
 
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 <script>
-function handleRegister() {
+async function handleRegister() {
   const fname = document.getElementById('reg-fname').value.trim();
   const lname = document.getElementById('reg-lname').value.trim();
   const email = document.getElementById('reg-email').value.trim();
@@ -130,18 +130,33 @@ function handleRegister() {
   if (pwd !== pwd2) { document.getElementById('reg-pwd2').classList.add('error'); valid = false; showToast('<span class="toast-icon">⚠️</span> Passwords do not match.', 'error'); return; }
   if (!terms) { showToast('<span class="toast-icon">⚠️</span> Please accept the Terms of Service.', 'error'); return; }
   if (!valid) { showToast('<span class="toast-icon">⚠️</span> Please fill all required fields.', 'error'); return; }
-  localStorage.setItem('pothub_user', JSON.stringify({ email, name: fname + ' ' + lname }));
-  showToast('<span class="toast-icon">🎉</span> Account created! Welcome to PotHub!', 'success');
-  setTimeout(() => window.location.href = 'index.html', 1600);
+
+  try {
+    const r = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pwd, first_name: fname, last_name: lname })
+    });
+    const data = await r.json();
+    if (!r.ok) {
+      showToast('<span class="toast-icon">⚠️</span> ' + (data.error || 'Registration failed'), 'error');
+      return;
+    }
+    localStorage.setItem('pothub_user', JSON.stringify(data.user));
+    localStorage.setItem('pothub_token', data.token);
+    showToast('<span class="toast-icon">🎉</span> Account created! Welcome to PotHub!', 'success');
+    setTimeout(() => window.location.href = '/', 1600);
+  } catch (e) {
+    console.error('Register error:', e);
+    showToast('<span class="toast-icon">⚠️</span> Network error. Try again.', 'error');
+  }
 }
 
 function socialRegister(p) {
-  showToast(`<span class="toast-icon">🔄</span> Connecting to ${p}...`);
+  showToast('<span class="toast-icon">🔄</span> ' + p + ' registration coming soon...', 'info');
   setTimeout(() => {
-    localStorage.setItem('pothub_user', JSON.stringify({ email: 'user@pothub.ph', name: 'Plant Parent' }));
-    showToast('<span class="toast-icon">🌿</span> Account created! Welcome!', 'success');
-    setTimeout(() => window.location.href = 'index.html', 1200);
-  }, 1500);
+    window.location.href = '/login';
+  }, 2000);
 }
 
 function checkStrength(val) {
