@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>About — PotHub</title>
-<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/style.css\') }}">
-<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/responsive.css\') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
 <style>
 .about-hero{background:var(--black);min-height:90vh;display:grid;grid-template-columns:1fr 1fr;position:relative;overflow:hidden}
 .ah-left{display:flex;flex-direction:column;justify-content:center;padding:120px 80px 80px;position:relative;z-index:1}
@@ -222,8 +222,8 @@
 </div>
 
 <div id="footer-placeholder"></div>
-<script src="{{ url_for(\'static\', filename=\'js/components.js\') }}"></script>
-<script src="{{ url_for(\'static\', filename=\'js/app.js\') }}"></script>
+<script src="{{ url_for('static', filename='js/components.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
 <script>
 injectComponents('about');
 function pageInit() { setupReveal(); }

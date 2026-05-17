@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Checkout — PotHub</title>
-<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/style.css\') }}">
-<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/responsive.css\') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
 <style>
 .checkout-layout{display:grid;grid-template-columns:1fr 420px;gap:64px;padding:60px 0}
 .checkout-logo{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;letter-spacing:4px;text-transform:uppercase;color:var(--black);text-decoration:none}
@@ -183,8 +183,8 @@
 </div>
 
 <div id="footer-placeholder"></div>
-<script src="{{ url_for(\'static\', filename=\'js/components.js\') }}"></script>
-<script src="{{ url_for(\'static\', filename=\'js/app.js\') }}"></script>
+<script src="{{ url_for('static', filename='js/components.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
 <script>
 injectComponents('');
 

@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Collections — PotHub</title>
-<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/style.css\') }}">
-<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/responsive.css\') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
 <style>
 .collections-hero-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:3px;min-height:70vh}
 .col-hero-main{background:var(--black);display:flex;flex-direction:column;justify-content:flex-end;padding:80px;position:relative;overflow:hidden;cursor:pointer}
@@ -149,8 +149,8 @@
 </div>
 
 <div id="footer-placeholder"></div>
-<script src="{{ url_for(\'static\', filename=\'js/components.js\') }}"></script>
-<script src="{{ url_for(\'static\', filename=\'js/app.js\') }}"></script>
+<script src="{{ url_for('static', filename='js/components.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
 <script>
 injectComponents('collections');
 

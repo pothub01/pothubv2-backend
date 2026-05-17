@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login — PotHub</title>
-<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/style.css\') }}">
-<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/responsive.css\') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
 <style>
 .auth-page{min-height:100vh;display:grid;grid-template-columns:1fr 1fr}
 .auth-left{background:var(--black);display:flex;flex-direction:column;justify-content:center;padding:80px;position:relative;overflow:hidden}
@@ -108,7 +108,7 @@
   </div>
 </div>
 
-<script src="{{ url_for(\'static\', filename=\'js/app.js\') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
 <script>
 function handleLogin() {
   const email = document.getElementById('login-email').value.trim();

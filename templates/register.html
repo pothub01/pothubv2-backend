@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Register — PotHub</title>
-<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/style.css\') }}">
-<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/responsive.css\') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
 <style>
 .auth-page{min-height:100vh;display:grid;grid-template-columns:1fr 1fr}
 .auth-left{background:var(--green);display:flex;flex-direction:column;justify-content:center;padding:80px;position:relative;overflow:hidden}
@@ -112,7 +112,7 @@
   </div>
 </div>
 
-<script src="{{ url_for(\'static\', filename=\'js/app.js\') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
 <script>
 function handleRegister() {
   const fname = document.getElementById('reg-fname').value.trim();

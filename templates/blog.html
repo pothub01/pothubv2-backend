@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Blog — PotHub</title>
-<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/style.css\') }}">
-<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/responsive.css\') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
 <style>
 .blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
 .blog-hero-card{grid-column:1/-1;background:var(--black);min-height:520px;display:flex;align-items:flex-end;padding:64px;position:relative;overflow:hidden;cursor:pointer}
@@ -119,20 +119,20 @@
 </div>
 
 <div id="footer-placeholder"></div>
-<script src="{{ url_for(\'static\', filename=\'js/components.js\') }}"></script>
-<script src="{{ url_for(\'static\', filename=\'js/app.js\') }}"></script>
+<script src="{{ url_for('static', filename='js/components.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
 <script>
 injectComponents('blog');
 
 const POSTS = [
-  { id:1, cat:'Interior Styling', title:'10 Ways to Style Pots in a Small Living Room', excerpt:'Small spaces deserve big plant energy. Here\'s how to use pots strategically to make your living room feel lush without feeling cluttered.', icon:'🏠', author:'Anna R.', date:'May 10, 2026', read:'5 min', tags:['styling','indoor'] },
+  { id:1, cat:'Interior Styling', title:'10 Ways to Style Pots in a Small Living Room', excerpt:'Small spaces deserve big plant energy. Here's how to use pots strategically to make your living room feel lush without feeling cluttered.', icon:'🏠', author:'Anna R.', date:'May 10, 2026', read:'5 min', tags:['styling','indoor'] },
   { id:2, cat:'Plant Decor', title:'The Art of Grouping Plants: The Rule of Three', excerpt:'Grouping plants in odd numbers creates visual balance. Learn how to arrange pots of different heights, textures, and tones for a natural, curated look.', icon:'🌿', author:'Marco S.', date:'May 5, 2026', read:'4 min', tags:['decor','styling'] },
   { id:3, cat:'Gardening Tips', title:'Why Terracotta is the Best Pot Material for Most Plants', excerpt:'Terracotta has been used for centuries — and for good reason. Its breathability, affordability, and earthy beauty make it the king of plant pots.', icon:'🏺', author:'Liza T.', date:'Apr 28, 2026', read:'6 min', tags:['terracotta','care'] },
   { id:4, cat:'Pot Maintenance', title:'How to Clean Your Ceramic Pots Without Damaging the Glaze', excerpt:'A clean pot is a happy pot. We walk you through the safest, most effective methods for removing mineral buildup, mold, and stains from glazed ceramics.', icon:'✨', author:'Carlo L.', date:'Apr 20, 2026', read:'3 min', tags:['care','ceramic'] },
-  { id:5, cat:'Home Inspiration', title:'The Minimalist Home: How Plants Bring Warmth to Clean Spaces', excerpt:'Nordic-inspired interiors thrive on the contrast between clean white walls and the organic chaos of plants. Here\'s how to get the balance just right.', icon:'⬜', author:'Anna R.', date:'Apr 14, 2026', read:'7 min', tags:['minimalist','styling'] },
-  { id:6, cat:'Gardening Tips', title:'Choosing the Right Pot Size for Your Plant: A Complete Guide', excerpt:'Pot size matters more than most people think. Too big and your plant drowns; too small and it\'s rootbound. Here\'s the definitive sizing guide.', icon:'📏', author:'Liza T.', date:'Apr 7, 2026', read:'5 min', tags:['tips','care'] },
-  { id:7, cat:'Sustainability', title:'Our Journey to Zero-Plastic Packaging — And What We Learned', excerpt:'In 2024 we committed to eliminating all plastic from our supply chain. Here\'s the honest story of how we got there, the setbacks we faced, and what\'s next.', icon:'🌍', author:'Carlo L.', date:'Mar 30, 2026', read:'8 min', tags:['eco','sustainability'] },
-  { id:8, cat:'Plant Decor', title:'Hanging Planters: The Vertical Garden Revolution', excerpt:'When floor space runs out, go up! Hanging planters are having a massive moment in Philippine interiors. Here\'s how to style them beautifully.', icon:'🪴', author:'Marco S.', date:'Mar 22, 2026', read:'4 min', tags:['hanging','decor'] },
+  { id:5, cat:'Home Inspiration', title:'The Minimalist Home: How Plants Bring Warmth to Clean Spaces', excerpt:'Nordic-inspired interiors thrive on the contrast between clean white walls and the organic chaos of plants. Here's how to get the balance just right.', icon:'⬜', author:'Anna R.', date:'Apr 14, 2026', read:'7 min', tags:['minimalist','styling'] },
+  { id:6, cat:'Gardening Tips', title:'Choosing the Right Pot Size for Your Plant: A Complete Guide', excerpt:'Pot size matters more than most people think. Too big and your plant drowns; too small and it's rootbound. Here's the definitive sizing guide.', icon:'📏', author:'Liza T.', date:'Apr 7, 2026', read:'5 min', tags:['tips','care'] },
+  { id:7, cat:'Sustainability', title:'Our Journey to Zero-Plastic Packaging — And What We Learned', excerpt:'In 2024 we committed to eliminating all plastic from our supply chain. Here's the honest story of how we got there, the setbacks we faced, and what's next.', icon:'🌍', author:'Carlo L.', date:'Mar 30, 2026', read:'8 min', tags:['eco','sustainability'] },
+  { id:8, cat:'Plant Decor', title:'Hanging Planters: The Vertical Garden Revolution', excerpt:'When floor space runs out, go up! Hanging planters are having a massive moment in Philippine interiors. Here's how to style them beautifully.', icon:'🪴', author:'Marco S.', date:'Mar 22, 2026', read:'4 min', tags:['hanging','decor'] },
 ];
 
 const ARTICLE_CONTENT = {

@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PotHub — Just Grow It | Premium Plant Pots & Planters Philippines</title>
 <meta name="description" content="Shop premium ceramic pots, terracotta planters, and indoor gardening accessories. PotHub — Philippines' most loved plant pot store.">
-<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/style.css\') }}">
-<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/responsive.css\') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
 <style>
 /* ── HOME SPECIFIC ── */
 .hero-num { position:absolute; right:48px; bottom:40px; z-index:2; font-family:'Barlow Condensed',sans-serif; font-size:120px; font-weight:900; color:rgba(255,255,255,.04); line-height:1; pointer-events:none; }
@@ -186,7 +186,7 @@
   </div>
   <div style="text-align:center;flex-shrink:0">
     <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:8px">Use Code</div>
-    <div class="promo-code" onclick="navigator.clipboard.writeText('GROWFREE'); showToast('<span class=\\'toast-icon\\'>✅</span> Code copied!','success')">GROWFREE</div>
+    <div class="promo-code" onclick="navigator.clipboard.writeText('GROWFREE'); showToast('<span class=\'toast-icon\'>✅</span> Code copied!','success')">GROWFREE</div>
     <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:8px">Click to copy</div>
   </div>
 </div>
@@ -286,8 +286,8 @@
 
 <div id="footer-placeholder"></div>
 
-<script src="{{ url_for(\'static\', filename=\'js/components.js\') }}"></script>
-<script src="{{ url_for(\'static\', filename=\'js/app.js\') }}"></script>
+<script src="{{ url_for('static', filename='js/components.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
 <script>
 injectComponents('home');
 
