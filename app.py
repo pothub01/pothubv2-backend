@@ -849,6 +849,12 @@ def handle_exception(e):
         "message": str(e),
         "type": type(e).__name__
     }), 500
+# ── Account Page ──
+@app.route("/account")
+def account_page():
+    """Serve the user account/profile page."""
+    return render_template("account.html")
+
 # ── Error Handlers ──
 @app.errorhandler(404)
 def not_found(error):

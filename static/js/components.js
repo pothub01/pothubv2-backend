@@ -59,7 +59,7 @@ function getNavHTML(active = '') {
       </div>
       <div id="mobile-user" style="display:none;align-items:center;gap:10px">
         <span id="mobile-user-name" style="font-size:13px;font-weight:600"></span>
-        <a href="/" onclick="logout();return false;" class="btn btn-ghost-dark btn-sm" style="font-size:12px">Logout</a>
+        <a href="/account" class="btn btn-ghost-dark btn-sm" style="font-size:12px">My Account</a><a href="/" onclick="logout();return false;" class="btn btn-ghost-dark btn-sm" style="font-size:12px">Logout</a>
       </div>
     </div>
   </div>
@@ -79,7 +79,7 @@ function getNavHTML(active = '') {
       <div class="nav-actions">
         <button class="nav-btn" onclick="openSearch()">🔍 Search</button>
         <a href="wishlist.html" class="nav-btn">🤍 <span class="wish-count">0</span></a>
-        <a href="/login" class="nav-btn" id="nav-account-btn">👤 Account</a>
+        <a href="/account" class="nav-btn" id="nav-account-btn">👤 Account</a>
         <button class="nav-btn nav-cart-btn" onclick="openCartDrawer()">🌿 Cart <span class="cart-count">0</span></button>
         <button class="nav-mobile-btn" id="mobile-toggle" onclick="toggleMobile()">☰</button>
       </div>
