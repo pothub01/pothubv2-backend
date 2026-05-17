@@ -809,13 +809,33 @@ def not_found(error):
 def internal_error(error):
     return jsonify({"error": "Internal server error", "message": "Something went wrong"}), 500
 
-# ── Main ──
+# ── Initialize on Import (for gunicorn) ──
+if not os.path.exists(DB_PATH):
+    print("Database not found. Initializing...")
+    init_db()
+    seed_products()
+    seed_blog_posts()
+    seed_reviews()
+    print("Database ready")
+
+# ── Production Entry Point ──
 if __name__ == "__main__":
-    if not os.path.exists(DB_PATH):
-        init_db()
-        seed_products()
-        seed_blog_posts()
-        seed_reviews()
-    print("PotHub Backend starting on http://localhost:5000")
-    print("API endpoints available at /api/*")
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    debug = os.environ.get("FLASK_ENV") != "production"
+    app.run(debug=debug, host="0.0.0.0", port=port)
+
+@app.route("/api/debug", methods=["GET"])
+def debug_info():
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        tables = [t[0] for t in cursor.fetchall()]
+        cursor.execute("SELECT COUNT(*) FROM products")
+        count = cursor.fetchone()[0]
+        cursor.execute("SELECT id, name, tags FROM products LIMIT 1")
+        first = cursor.fetchone()
+        return jsonify({"tables": tables, "count": count, "first": dict(first) if first else None})
+    except Exception as e:
+        import traceback
+        return jsonify({"error": str(e), "traceback": traceback.format_exc()}), 500

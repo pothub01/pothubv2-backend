@@ -110,7 +110,7 @@
 
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 <script>
-function handleLogin() {
+async function handleLogin() {
   const email = document.getElementById('login-email').value.trim();
   const pwd   = document.getElementById('login-pwd').value;
   document.getElementById('login-email').classList.remove('error');
@@ -119,10 +119,25 @@ function handleLogin() {
   if (!email || !email.includes('@')) { document.getElementById('login-email').classList.add('error'); valid = false; }
   if (!pwd || pwd.length < 6)         { document.getElementById('login-pwd').classList.add('error'); valid = false; }
   if (!valid) { showToast('<span class="toast-icon">⚠️</span> Please check your credentials.', 'error'); return; }
-  // Simulate login
-  localStorage.setItem('pothub_user', JSON.stringify({ email, name: email.split('@')[0] }));
-  showToast('<span class="toast-icon">🌿</span> Welcome back! Redirecting...', 'success');
-  setTimeout(() => window.location.href = 'index.html', 1500);
+
+  try {
+    const r = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pwd })
+    });
+    const data = await r.json();
+    if (!r.ok) {
+      showToast('<span class="toast-icon">⚠️</span> ' + (data.error || 'Login failed'), 'error');
+      return;
+    }
+    localStorage.setItem('pothub_user', JSON.stringify(data.user));
+    localStorage.setItem('pothub_token', data.token);
+    showToast('<span class="toast-icon">🌿</span> Welcome back! Redirecting...', 'success');
+    setTimeout(() => window.location.href = '/', 1500);
+  } catch (e) {
+    showToast('<span class="toast-icon">⚠️</span> Network error. Try again.', 'error');
+  }
 }
 
 function socialLogin(provider) {
