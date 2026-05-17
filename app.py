@@ -855,6 +855,253 @@ def account_page():
     """Serve the user account/profile page."""
     return render_template("account.html")
 
+
+# ── Google OAuth Routes ──
+@app.route('/auth/google')
+def google_login():
+    """Initiate Google OAuth login."""
+    redirect_uri = url_for('google_callback', _external=True)
+    return oauth.google.authorize_redirect(redirect_uri)
+
+@app.route('/auth/google/callback')
+def google_callback():
+    """Handle Google OAuth callback."""
+    try:
+        token = oauth.google.authorize_access_token()
+        user_info = token.get('userinfo')
+
+        if not user_info:
+            return jsonify({"error": "Failed to get user info from Google"}), 400
+
+        email = user_info.get('email', '').lower()
+        name = user_info.get('name', '')
+        first_name = user_info.get('given_name', '')
+        last_name = user_info.get('family_name', '')
+
+        if not email:
+            return jsonify({"error": "No email provided by Google"}), 400
+
+        db = get_db()
+        cursor = db.cursor()
+
+        # Check if user exists
+        cursor.execute("SELECT * FROM users WHERE email = ?", (email,))
+        row = cursor.fetchone()
+
+        if not row:
+            # Create new user from Google data
+            cursor.execute(
+                "INSERT INTO users (email, password_hash, first_name, last_name, phone) VALUES (?, ?, ?, ?, ?)",
+                (email, hash_password(secrets.token_hex(32)), first_name, last_name, '')
+            )
+            db.commit()
+            user_id = cursor.lastrowid
+        else:
+            user_id = row['id']
+
+        auth_token = generate_token()
+
+        return render_template('oauth_success.html', 
+            provider='Google',
+            email=email,
+            name=name,
+            token=auth_token,
+            user_id=user_id)
+
+    except Exception as e:
+        print(f"Google OAuth error: {str(e)}")
+        return jsonify({"error": "Google authentication failed", "details": str(e)}), 500
+
+# ── Facebook OAuth Routes ──
+@app.route('/auth/facebook')
+def facebook_login():
+    """Initiate Facebook OAuth login."""
+    redirect_uri = url_for('facebook_callback', _external=True)
+    return oauth.facebook.authorize_redirect(redirect_uri)
+
+@app.route('/auth/facebook/callback')
+def facebook_callback():
+    """Handle Facebook OAuth callback."""
+    try:
+        token = oauth.facebook.authorize_access_token()
+        resp = oauth.facebook.get('https://graph.facebook.com/me?fields=id,name,email,first_name,last_name,picture')
+        profile = resp.json()
+
+        email = profile.get('email', '').lower()
+        name = profile.get('name', '')
+        first_name = profile.get('first_name', '')
+        last_name = profile.get('last_name', '')
+
+        if not email:
+            return jsonify({"error": "No email provided by Facebook"}), 400
+
+        db = get_db()
+        cursor = db.cursor()
+
+        # Check if user exists
+        cursor.execute("SELECT * FROM users WHERE email = ?", (email,))
+        row = cursor.fetchone()
+
+        if not row:
+            # Create new user from Facebook data
+            cursor.execute(
+                "INSERT INTO users (email, password_hash, first_name, last_name, phone) VALUES (?, ?, ?, ?, ?)",
+                (email, hash_password(secrets.token_hex(32)), first_name, last_name, '')
+            )
+            db.commit()
+            user_id = cursor.lastrowid
+        else:
+            user_id = row['id']
+
+        auth_token = generate_token()
+
+        return render_template('oauth_success.html',
+            provider='Facebook',
+            email=email,
+            name=name,
+            token=auth_token,
+            user_id=user_id)
+
+    except Exception as e:
+        print(f"Facebook OAuth error: {str(e)}")
+        return jsonify({"error": "Facebook authentication failed", "details": str(e)}), 500
+
+
+# ── Admin API Routes ──
+
+@app.route("/admin")
+def admin_page():
+    """Serve the admin dashboard."""
+    return render_template("admin.html")
+
+@app.route("/api/orders/all", methods=["GET"])
+def get_all_orders():
+    """Get all orders (admin endpoint)."""
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM orders ORDER BY created_at DESC")
+    rows = cursor.fetchall()
+
+    orders = []
+    for row in rows:
+        cursor.execute("SELECT COUNT(*) FROM order_items WHERE order_id = ?", (row['id'],))
+        item_count = cursor.fetchone()[0]
+        orders.append({
+            "id": row['id'],
+            "order_number": row['order_number'],
+            "email": row['email'],
+            "first_name": row['first_name'],
+            "last_name": row['last_name'],
+            "total": row['total'],
+            "status": row['status'],
+            "created_at": row['created_at'],
+            "item_count": item_count
+        })
+    return jsonify({"orders": orders})
+
+@app.route("/api/orders/<order_number>/status", methods=["PUT"])
+def update_order_status(order_number):
+    """Update order status."""
+    data = request.get_json()
+    if not data or not data.get('status'):
+        return jsonify({"error": "Status required"}), 400
+
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("UPDATE orders SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE order_number = ?",
+                   (data['status'], order_number))
+    db.commit()
+
+    if cursor.rowcount == 0:
+        return jsonify({"error": "Order not found"}), 404
+
+    return jsonify({"success": True, "message": "Status updated"})
+
+@app.route("/api/customers", methods=["GET"])
+def get_customers():
+    """Get all customers with order counts."""
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("""
+        SELECT u.*, COUNT(o.id) as order_count 
+        FROM users u 
+        LEFT JOIN orders o ON u.email = o.email 
+        GROUP BY u.id 
+        ORDER BY u.created_at DESC
+    """)
+    rows = cursor.fetchall()
+
+    customers = []
+    for row in rows:
+        customers.append({
+            "id": row['id'],
+            "name": f"{row['first_name'] or ''} {row['last_name'] or ''}".strip(),
+            "email": row['email'],
+            "phone": row['phone'],
+            "created_at": row['created_at'],
+            "order_count": row['order_count']
+        })
+    return jsonify({"customers": customers})
+
+@app.route("/api/messages", methods=["GET"])
+def get_messages():
+    """Get all contact messages."""
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM contact_messages ORDER BY created_at DESC")
+    rows = cursor.fetchall()
+
+    messages = [{
+        "id": r['id'],
+        "first_name": r['first_name'],
+        "last_name": r['last_name'],
+        "email": r['email'],
+        "topic": r['topic'],
+        "message": r['message'],
+        "created_at": r['created_at']
+    } for r in rows]
+    return jsonify({"messages": messages})
+
+@app.route("/api/subscribers", methods=["GET"])
+def get_subscribers():
+    """Get all newsletter subscribers."""
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM subscribers ORDER BY created_at DESC")
+    rows = cursor.fetchall()
+
+    subscribers = [{
+        "id": r['id'],
+        "email": r['email'],
+        "created_at": r['created_at']
+    } for r in rows]
+    return jsonify({"subscribers": subscribers})
+
+@app.route("/api/reviews/all", methods=["GET"])
+def get_all_reviews():
+    """Get all reviews with product names."""
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("""
+        SELECT r.*, p.name as product_name 
+        FROM reviews r 
+        JOIN products p ON r.product_id = p.id 
+        ORDER BY r.created_at DESC
+    """)
+    rows = cursor.fetchall()
+
+    reviews = [{
+        "id": r['id'],
+        "product_id": r['product_id'],
+        "product_name": r['product_name'],
+        "user_name": r['user_name'],
+        "rating": r['rating'],
+        "title": r['title'],
+        "body": r['body'],
+        "date": r['created_at']
+    } for r in rows]
+    return jsonify({"reviews": reviews})
+
 # ── Error Handlers ──
 @app.errorhandler(404)
 def not_found(error):

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Success — PotHub</title>
+<style>
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #f8faf8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  margin: 0;
+}
+.success-card {
+  background: white;
+  border-radius: 20px;
+  padding: 48px;
+  text-align: center;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  max-width: 400px;
+  width: 90%;
+}
+.icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+.title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1a3c1a;
+  margin-bottom: 8px;
+}
+.subtitle {
+  color: #6b7a6b;
+  font-size: 15px;
+  margin-bottom: 24px;
+}
+.provider-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #f0f5f0;
+  padding: 8px 16px;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a3c1a;
+  margin-bottom: 24px;
+}
+.redirect-text {
+  font-size: 13px;
+  color: #6b7a6b;
+}
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #e0e8e0;
+  border-top-color: #4caf50;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 16px auto;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+</style>
+</head>
+<body>
+
+<div class="success-card">
+  <div class="icon">🌿</div>
+  <div class="title">Welcome Back!</div>
+  <div class="subtitle">You are now signed in with {{ provider }}</div>
+  <div class="provider-badge">
+    {% if provider == 'Google' %}🔴{% else %}🔵{% endif %}
+    {{ provider }}
+  </div>
+  <div class="spinner"></div>
+  <div class="redirect-text">Redirecting to your account...</div>
+</div>
+
+<script>
+// Store user session
+const user = {
+  id: {{ user_id }},
+  email: "{{ email }}",
+  name: "{{ name }}",
+  first_name: "{{ name.split(' ')[0] if name else '' }}",
+  last_name: "{{ name.split(' ')[1:] | join(' ') if name else '' }}"
+};
+
+localStorage.setItem('pothub_user', JSON.stringify(user));
+localStorage.setItem('pothub_token', "{{ token }}");
+
+// Redirect to homepage after 1.5 seconds
+setTimeout(() => {
+  window.location.href = '/';
+}, 1500);
+</script>
+
+</body>
+</html>
