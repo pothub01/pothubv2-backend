@@ -23,3 +23,10 @@ coverage.xml
 
 # Don't commit the database (it will be created on deploy)
 data/*.db
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
